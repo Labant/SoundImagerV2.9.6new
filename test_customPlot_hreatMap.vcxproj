@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{1E41F2EC-7F18-40EF-8731-2785294931C1}</ProjectGuid>
+    <Keyword>QtVS_v304</Keyword>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">10.0.22000.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">10.0.22000.0</WindowsTargetPlatformVersion>
+    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+    <ProjectName>SoundImager_v2.9.6(SphereAndHm)</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
+    <Import Project="$(QtMsBuild)\qt_defaults.props" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="QtSettings">
+    <QtInstall>Qt5.15.2_msvc2019</QtInstall>
+    <QtModules>core;opengl;gui;multimedia;widgets;printsupport;multimediawidgets;openglextensions</QtModules>
+    <QtBuildConfig>debug</QtBuildConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="QtSettings">
+    <QtInstall>Qt5.15.2_msvc2019</QtInstall>
+    <QtModules>core;gui;multimedia;widgets;printsupport;multimediawidgets</QtModules>
+    <QtBuildConfig>release</QtBuildConfig>
+  </PropertyGroup>
+  <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
+    <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
+  </Target>
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">
+    <IncludePath>../../09_share/glew;../../06_Code/test_customPlot_hreatMap_SphereAndHM_V2.9.5/include;../../09_share;../../09_share/opencv2;../../09_share/ni;../../09_share/rs/librealsense2;$(SolutionDir);I:\WORK\09_share\glew;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.5\include;I:\WORK\09_share;I:\WORK\09_share\opencv2;I:\WORK\09_share\ni;I:\WORK\09_share\rs\librealsense2;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\include;$(IncludePath)</IncludePath>
+    <LibraryPath>../../09_share/ni_lib;../../09_share/rs_lib;../../09_share/opencv_lib;../../06_Code/test_customPlot_hreatMap_SphereAndHM_V2.9.5/lib;../../09_share/glew_lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
+    <IncludePath>G:\WORK\09_share\rs\librealsense2;G:\WORK\09_share\ni;G:\WORK\09_share\opencv2;G:\WORK\09_share;G:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.5\include;G:\WORK\09_share\glew;I:\WORK\09_share\rs\librealsense2;I:\WORK\09_share\ni;I:\WORK\09_share\opencv2;I:\WORK\09_share;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\include;I:\WORK\09_share\glew;$(SolutionDir);$(IncludePath)</IncludePath>
+    <LibraryPath>G:\WORK\09_share\ni_lib;G:\WORK\09_share\rs_lib;G:\WORK\09_share\opencv_lib;G:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.5\lib;G:\WORK\09_share\glew_lib;I:\WORK\09_share\ni_lib;I:\WORK\09_share\rs_lib;I:\WORK\09_share\opencv_lib;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.5\lib;I:\WORK\09_share\glew_lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Link>
+      <AdditionalDependencies>NIDAQmx.lib;calibration.lib;OpenGL32.lib;libfftw3-3.lib;libfftw3f-3.lib;libfftw3l-3.lib;direction_spl.lib;opencv_world460d.lib;glew32.lib;filt.lib;%(AdditionalDependencies);$(Qt_LIBS_)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\lvs\04_Qt_test\test_customPlot_hreatMap_SphereAndHM_V2.9.5\include;C:\Program Files (x86)\Intel RealSense SDK 2.0\include;D:\opencv460\opencv\build\include;D:\opencv460\opencv\build\include\opencv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Link>
+      <AdditionalDependencies>interp_imagesc_ver01.lib;NIDAQmx.lib;OpenGL32.lib;calibration.lib;libfftw3-3.lib;libfftw3f-3.lib;libfftw3l-3.lib;direction_spl.lib;glew32.lib;opencv_world460.lib;filt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files (x86)\Intel RealSense SDK 2.0\lib_x86\release;D:\opencv460\opencv\build\x86\vc17\lib;E:\lvs\04_Qt_test\test_customPlot_hreatMap_prueSphere_prueOpenGL\include\glew-2.1.0\lib\Release\Win32;E:\lvs\04_Qt_test\test_customPlot_hreatMap_prueSphere_prueOpenGL\x86_lib;E:\lvs\04_Qt_test\test_customPlot_hreatMap_prueSphere_prueOpenGL\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\Intel RealSense SDK 2.0\include;D:\opencv460\opencv\build\include;D:\opencv460\opencv\build\include\opencv2;E:\lvs\04_Qt_test\test_customPlot_hreatMap_prueSphere_prueOpenGL\include\glew-2.1.0\include;E:\lvs\04_Qt_test\test_customPlot_hreatMap_prueSphere_prueOpenGL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="Configuration">
+    <ClCompile>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="Configuration">
+    <ClCompile>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="BaseWidget.cpp" />
+    <ClCompile Include="CalibrationDll.cpp" />
+    <ClCompile Include="filtDll.cpp" />
+    <ClCompile Include="include\Camera.cpp" />
+    <ClCompile Include="include\EncapsloationWAVAudio.cpp" />
+    <ClCompile Include="include\GLContext.cpp" />
+    <ClCompile Include="include\GLEWINQT2.cpp" />
+    <ClCompile Include="include\nidevice.cpp" />
+    <ClCompile Include="include\ObServerationAngle.cpp" />
+    <ClCompile Include="MainModel.cpp" />
+    <ClCompile Include="MainViewController.cpp" />
+    <ClCompile Include="Model_AudioCollector.cpp" />
+    <ClCompile Include="Model_filteringSetting.cpp" />
+    <ClCompile Include="Model_HMCutOut.cpp" />
+    <ClCompile Include="Model_HmSizeFactor.cpp" />
+    <ClCompile Include="Model_hotMapAndVideoDisplay.cpp" />
+    <ClCompile Include="Model_RecordAudio.cpp" />
+    <ClCompile Include="Model_VideoDevice.cpp" />
+    <ClCompile Include="MyStruct.h" />
+    <ClCompile Include="View_AudioRecord.cpp" />
+    <ClCompile Include="View_DeviceChoose.cpp" />
+    <ClCompile Include="View_DistanceSelect.cpp" />
+    <ClCompile Include="View_filteringSetting.cpp" />
+    <ClCompile Include="View_FrequencyTimeDomain.cpp" />
+    <ClCompile Include="View_HMCutOut.cpp" />
+    <ClCompile Include="View_HmSizeFactor.cpp" />
+    <ClCompile Include="View_hotMapAndVideoDisplay.cpp" />
+    <ClCompile Include="View_TabWidget_Setting.cpp" />
+    <ClCompile Include="View_ValueOfTFSetting.cpp" />
+    <QtRcc Include="test_customPlot_hreatMap.qrc" />
+    <QtUic Include="test_customPlot_hreatMap.ui" />
+    <QtMoc Include="MainViewControl.h" />
+    <ClCompile Include="Custom_Box.cpp" />
+    <ClCompile Include="CVMat2QImage.cpp" />
+    <ClCompile Include="FFT_change.cpp" />
+    <ClCompile Include="include\qcustomplot.cpp" />
+    <ClCompile Include="soundcard.cpp" />
+    <ClCompile Include="MainViewControl.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="include\qcustomplot.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="soundcard.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BaseWidget.h" />
+    <ClInclude Include="calibration.h" />
+    <ClInclude Include="CalibrationDll.h" />
+    <ClInclude Include="DataPack.h" />
+    <ClInclude Include="direction_spl.h" />
+    <ClInclude Include="filt.h" />
+    <ClInclude Include="filtDll.h" />
+    <ClInclude Include="GlobalConfig.hpp" />
+    <ClInclude Include="include\CustomHm.hpp" />
+    <ClInclude Include="include\EncapsloationWAVAudio.h" />
+    <ClInclude Include="include\GenerateLvsFloat64ToInt.hh" />
+    <ClInclude Include="include\glCheck.hpp" />
+    <ClInclude Include="include\GLContext.h" />
+    <QtMoc Include="Model_hotMapAndVideoDisplay.h" />
+    <QtMoc Include="View_hotMapAndVideoDisplay.h" />
+    <QtMoc Include="Model_HmSizeFactor.h" />
+    <QtMoc Include="MainViewController.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="View_HmSizeFactor.h" />
+    <QtMoc Include="Model_HMCutOut.h" />
+    <ClInclude Include="View_DistanceSelect.h" />
+    <ClInclude Include="View_HMCutOut.h" />
+    <QtMoc Include="MainModel.h" />
+    <QtMoc Include="Model_filteringSetting.h" />
+    <QtMoc Include="include\GLEWINQT2.h" />
+    <QtMoc Include="Model_AudioCollector.h" />
+    <ClInclude Include="Model_RecordAudio.h" />
+    <QtMoc Include="View_ValueOfTFSetting.h" />
+    <QtMoc Include="Model_VideoDevice.h" />
+    <QtMoc Include="View_AudioRecord.h" />
+    <QtMoc Include="View_TabWidget_Setting.h" />
+    <QtMoc Include="include\nidevice.h" />
+    <QtMoc Include="View_FrequencyTimeDomain.h" />
+    <QtMoc Include="View_DeviceChoose.h" />
+    <QtMoc Include="include\ObServerationAngle.h" />
+    <QtMoc Include="include\Camera.h" />
+    <QtMoc Include="Custom_Box.h" />
+    <ClInclude Include="CVMat2QImage.h" />
+    <ClInclude Include="fftw3.h" />
+    <ClInclude Include="FFT_change.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="glsl\fragShader.glsl" />
+    <None Include="glsl\fragShader2.glsl" />
+    <None Include="glsl\fragShader3.glsl" />
+    <None Include="glsl\vertShader3.glsl" />
+    <None Include="include\vertShader.glsl" />
+    <None Include="include\vertShader2.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="image\ICon.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
+    <Import Project="$(QtMsBuild)\qt.targets" />
+  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

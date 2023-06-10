@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32929.386
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_customPlot_hreatMap", "test_customPlot_hreatMap.vcxproj", "{1E41F2EC-7F18-40EF-8731-2785294931C1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1E41F2EC-7F18-40EF-8731-2785294931C1}.Debug|x86.ActiveCfg = Debug|Win32
+		{1E41F2EC-7F18-40EF-8731-2785294931C1}.Debug|x86.Build.0 = Debug|Win32
+		{1E41F2EC-7F18-40EF-8731-2785294931C1}.Release|x86.ActiveCfg = Release|Win32
+		{1E41F2EC-7F18-40EF-8731-2785294931C1}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7AA08767-F2D2-4E98-A9FA-2DE58AAE402D}
+	EndGlobalSection
+EndGlobal
