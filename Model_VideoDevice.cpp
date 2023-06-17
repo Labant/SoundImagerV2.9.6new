@@ -150,9 +150,10 @@ void Model_VideoDevice::initConnect()
 {
 	connect(this->mtimer, &QTimer::timeout, this, &Model_VideoDevice::readFrame);//&Model_VideoDevice::
 
-	//start/stop
-	connect(this->_pView_DeviceChoose, &View_DeviceChoose::m_signal_modelStart, this, &Model_VideoDevice::start, Qt::QueuedConnection);
-	connect(this->_pView_DeviceChoose, &View_DeviceChoose::m_signal_modelStop, this, &Model_VideoDevice::stop,Qt::QueuedConnection);
+	//用海康，不用免驱
+	////start/stop
+	//connect(this->_pView_DeviceChoose, &View_DeviceChoose::m_signal_modelStart, this, &Model_VideoDevice::start, Qt::QueuedConnection);
+	//connect(this->_pView_DeviceChoose, &View_DeviceChoose::m_signal_modelStop, this, &Model_VideoDevice::stop,Qt::QueuedConnection);
 
 
 }

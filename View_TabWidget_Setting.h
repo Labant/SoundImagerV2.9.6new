@@ -5,6 +5,7 @@
 #include "View_DeviceChoose.h"
 #include "View_filteringSetting.h"
 #include "View_HMCutOut.h"
+#include "View_CarIdentifyInfoDisplay.h"
 
 class View_TabWidget_Setting : public QTabWidget
 {
@@ -33,5 +34,8 @@ public:
 	View_filteringSetting* _pView_filteringSetting = nullptr;
 	//子设置 裁剪数据窗口
 	View_HMCutOut* _pView_HMCutOut = nullptr;
+
+	//车辆识别
+	View_CarIdentifyInfoDisplay* _pView_CarIdentifyInfoDisplay = nullptr;
 };
 

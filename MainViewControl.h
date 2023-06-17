@@ -34,6 +34,8 @@
 #include <QTimer>
 #include "GlobalConfig.hpp"
 
+
+
 //#include "include/ObServerationAngle.h"
 //#include "include/Camera.h"
 
@@ -47,6 +49,7 @@ using namespace MYSTRUCT;
 
 
 class MainModel;
+
 
 class MainViewControl : public QWidget
 {
@@ -231,6 +234,7 @@ private:
 
 	//热力图大小系数
 	double mHmSizeFactor = 0.0f;
+
 
 signals:
 	void doFffOnce();

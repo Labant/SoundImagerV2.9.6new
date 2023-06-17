@@ -4,8 +4,17 @@
 #include "Model_VideoDevice.h"
 #include "CVMat2QImage.h"
 #include "CustomHm.hpp"
+#include "Model_HKDeviceGetRealTimeData.h"
 
-Model_hotMapAndVideoDisplay::Model_hotMapAndVideoDisplay(View_hotMapAndVideoDisplay* handle, Model_VideoDevice* _handle)
+#include "Model_CarPlateIdentify.h"
+
+//#ifndef MYNAMESPACE_H
+//#include "MyNameSpace.h"
+//#endif
+
+
+
+Model_hotMapAndVideoDisplay::Model_hotMapAndVideoDisplay(View_hotMapAndVideoDisplay* handle, QObject* _handle)
 {
 
 	//像素比 初始化
@@ -21,9 +30,12 @@ Model_hotMapAndVideoDisplay::Model_hotMapAndVideoDisplay(View_hotMapAndVideoDisp
 	//在进行初始化
 	this->_pView_hotMapAndVideoDisplay = handle;
 	//视频接口初始化
-	this->mModel_VideoDevice = _handle;
+	this->mModel_VideoDevice = qobject_cast<Model_VideoDevice*>(_handle); //opencv读取
+	this->_pModel_HKDeviceGetRealTimeData = qobject_cast<Model_HKDeviceGetRealTimeData*>(_handle); //海康
 	this->init();
 
+	////test
+	//test_ = imread("C:/Users/lvs/Pictures/46.jpg");
 }
 
 Model_hotMapAndVideoDisplay::~Model_hotMapAndVideoDisplay()
@@ -62,6 +74,9 @@ void Model_hotMapAndVideoDisplay::initMember()
 	//qDebug() << "this->_pTimer->thread:" << this->_pTimer->thread();
 	this->_pCustomHm = new CustomHm(this);
 
+	//车辆识别
+	this->_pModel_CarPlateIdentify = new Model_CarPlateIdentify(this);
+
 }
 
 void Model_hotMapAndVideoDisplay::initConnect()
@@ -81,6 +96,17 @@ void Model_hotMapAndVideoDisplay::initConnect()
 	//接受主线程发来设置范围的数据
 	connect(this->_pView_hotMapAndVideoDisplay, &View_hotMapAndVideoDisplay::on_signal_xAxisRange, this, &Model_hotMapAndVideoDisplay::on_setXAxisCutoutValue, Qt::QueuedConnection);
 	connect(this->_pView_hotMapAndVideoDisplay, &View_hotMapAndVideoDisplay::on_signal_yAxisRange, this, &Model_hotMapAndVideoDisplay::on_setYAxisCutoutValue, Qt::QueuedConnection);
+	//识别车牌
+	//connect(this, &Model_hotMapAndVideoDisplay::on_signal_sendImageMat, this->_pModel_CarPlateIdentify, &Model_CarPlateIdentify::on_signal_receiveMat, Qt::QueuedConnection);
+
+	//接收识别结果
+	//车牌
+	connect(this->_pModel_CarPlateIdentify, &Model_CarPlateIdentify::on_signal_sendIdentifyRes, this, &Model_hotMapAndVideoDisplay::on_setCarPlate,Qt::DirectConnection);
+	//声功率
+	connect(this->_pModel_CarPlateIdentify, &Model_CarPlateIdentify::on_signal_sendSoundPw, this, &Model_hotMapAndVideoDisplay::on_setSoundPw, Qt::DirectConnection);
+	//车道
+	connect(this->_pModel_CarPlateIdentify, &Model_CarPlateIdentify::on_signal_sendCarLane, this, &Model_hotMapAndVideoDisplay::on_setLane, Qt::DirectConnection);
+
 }
 
 void Model_hotMapAndVideoDisplay::init()
@@ -171,7 +197,7 @@ void Model_hotMapAndVideoDisplay::renderHM(const double* data)
 		}
 	}
 
-	qDebug() << "mMaxPos:" << mMaxPos << "it's value :"<< mCutoutMax;
+	//qDebug() << "mMaxPos:" << mMaxPos << "it's value :"<< mCutoutMax;
 
 	//渲染热力图 -->replot
 	//emit this->on_signal_replot_hotmap();
@@ -202,52 +228,106 @@ void Model_hotMapAndVideoDisplay::renderFM()
 		//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
 
 		
+		/*免驱相机*/
+		//QImage mImage;
+		//{
+		//	if (this->mModel_VideoDevice->mFrames.isEmpty())
+		//		return;
+		//	//QQueue方案 + Lock方案
+		//	qDebug() << "1->!";//1！-2！：1ms
+		//	qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
+		//	QMutexLocker m_MutexLocker(&this->mModel_VideoDevice->m_mutex_frames);
+		//	qDebug() << "2->!";//1！-2！：1ms
+		//	qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
+		//	mImage = CVMat2QImage::QCVMat2QImage(this->mModel_VideoDevice->mFrames.takeFirst());//.copy()
+		//	qDebug() << "3->!";//1！-2！：1ms
+		//	qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
 
+		//	////wait lock 方案
+		//	//qDebug() << "1->!";//1！-2！：1ms
+		//	//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
+		//	//if (this->mModel_VideoDevice->frame.empty())return;
+		//	//qDebug() << "2->!";//1！-2！：1ms
+		//	//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
+		//	//QMutexLocker mLocker(&this->mModel_VideoDevice->m_mutex_frame);
+		//	//qDebug() << "3->!";//1！-2！：1ms
+		//	//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
+		//	//mImage = CVMat2QImage::QCVMat2QImage(this->mModel_VideoDevice->frame);
+		//	//qDebug() << "4->!";//1！-2！：1ms
+		//	//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
+
+		//	//组织云图数据
+		//	this->mPoint.posX = this->mMaxPos.rx() * this->mWidthPixRate;
+		//	this->mPoint.posY = (this->mYAxisCutOut - this->mMaxPos.ry()) * this->mHightPixRate;//QColorMap和QPainter渲染的初始位置不同，前者从坐下，后者从右上。
+		//	this->mPoint.radius = this->mRadius;
+		//	this->mPoint.count = 0;
+		//	qDebug() << "5->!";//1！-2！：1ms
+		//	qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
+
+		//}
+		//{
+		//	//云图调用 调用外部锁
+		//	this->_pCustomHm->DrawCloudMap(mImage, mPoint, this->mModel_VideoDevice->m_mutex_frames);
+		//	qDebug() << "6->!";//1！-2！：1ms
+		//	qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
+		//	//qDebug() << mImage.save("mImage.jpg","JPG",100);
+		//	this->_pView_hotMapAndVideoDisplay->setBackground(QPixmap::fromImage(mImage), true, Qt::KeepAspectRatioByExpanding);//KeepAspectRatio KeepAspectRatioByExpanding
+
+		//}
+		//
+
+	
+		//海康相机
 		QImage mImage;
+		cv::Mat src;
 		{
-			if (this->mModel_VideoDevice->mFrames.isEmpty())
+			if (mHKFrames.isEmpty())
 				return;
 			//QQueue方案 + Lock方案
-			qDebug() << "1->!";//1！-2！：1ms
-			qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
-			QMutexLocker m_MutexLocker(&this->mModel_VideoDevice->m_mutex_frames);
-			qDebug() << "2->!";//1！-2！：1ms
-			qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
-			mImage = CVMat2QImage::QCVMat2QImage(this->mModel_VideoDevice->mFrames.takeFirst());//.copy()
-			qDebug() << "3->!";//1！-2！：1ms
-			qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
-			////wait lock 方案
 			//qDebug() << "1->!";//1！-2！：1ms
 			//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
-			//if (this->mModel_VideoDevice->frame.empty())return;
+			QMutexLocker mLocker(&mFramesMutex);
 			//qDebug() << "2->!";//1！-2！：1ms
 			//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
-			//QMutexLocker mLocker(&this->mModel_VideoDevice->m_mutex_frame);
+			src = mHKFrames.takeFirst();
+			mImage = CVMat2QImage::QCVMat2QImage(src);//.copy()
 			//qDebug() << "3->!";//1！-2！：1ms
 			//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
-			//mImage = CVMat2QImage::QCVMat2QImage(this->mModel_VideoDevice->frame);
-			//qDebug() << "4->!";//1！-2！：1ms
-			//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
+
+			//if (mM_image.isNull())
+			//	return;
 
 			//组织云图数据
 			this->mPoint.posX = this->mMaxPos.rx() * this->mWidthPixRate;
 			this->mPoint.posY = (this->mYAxisCutOut - this->mMaxPos.ry()) * this->mHightPixRate;//QColorMap和QPainter渲染的初始位置不同，前者从坐下，后者从右上。
 			this->mPoint.radius = this->mRadius;
 			this->mPoint.count = 0;
-			qDebug() << "5->!";//1！-2！：1ms
-			qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
+			//qDebug() << "5->!";//1！-2！：1ms
+			//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
 
+			//mImage = mM_image;
 		}
 		{
-			//云图调用 调用外部锁
-			this->_pCustomHm->DrawCloudMap(mImage, mPoint, this->mModel_VideoDevice->m_mutex_frames);
-			qDebug() << "6->!";//1！-2！：1ms
-			qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
+			if (this->hotMapCoefficient)//为真，画云图
+			{
+
+				//云图调用 调用外部锁
+				//this->_pCustomHm->DrawCloudMap(mImage, mPoint,mFramesMutex);
+				this->_pCustomHm->DrawCloudMap(mImage, mPoint, mFramesMutex);
+
+				//识别车辆 //子线程识别
+				emit this->on_signal_sendImageMat(src, this->P_1D_MAX_lvs);
+			}
+
+
+			//qDebug() << "6->!";//1！-2！：1ms
+			//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
 			//qDebug() << mImage.save("mImage.jpg","JPG",100);
 			this->_pView_hotMapAndVideoDisplay->setBackground(QPixmap::fromImage(mImage), true, Qt::KeepAspectRatioByExpanding);//KeepAspectRatio KeepAspectRatioByExpanding
+			//this->_pView_hotMapAndVideoDisplay->setBackground(QPixmap::fromImage(mM_image), true, Qt::KeepAspectRatioByExpanding);//KeepAspectRatio KeepAspectRatioByExpanding
 
 		}
-		
+
 
 	}
 	//qDebug() << "6!";
@@ -269,6 +349,18 @@ void Model_hotMapAndVideoDisplay::on_setYAxisCutoutValue(unsigned short value)
 	this->mYAxisCutOut = value;
 	//像素比
 	this->mHightPixRate = this->mPixHight / this->mYAxisCutOut;
+}
+void Model_hotMapAndVideoDisplay::on_setCarPlate(QString str)
+{
+	emit this->on_signal_setCarPaltedisplay(str);
+}
+void Model_hotMapAndVideoDisplay::on_setSoundPw(double pw)
+{
+	emit this->on_signal_setSoundPw(pw);
+}
+void Model_hotMapAndVideoDisplay::on_setLane(QString lane)
+{
+	emit this->on_signal_setCarLane(lane);
 }
 void Model_hotMapAndVideoDisplay::invokeDll()
 {

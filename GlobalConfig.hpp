@@ -1,6 +1,11 @@
 #pragma once
+//#include <QMutex>
+//#include "opencv2/core.hpp"
+//#include <QQueue>
+
 #ifndef GLOBALCONFIG_H
 #define GLOBALCONFIG_H
+
 //相机初始flag
 //bool GLOBALCONFIG_CAMERAINITFLAG = false;
 struct dataPack
@@ -22,13 +27,18 @@ constexpr int CHANNLENUMBER = 4;
 //constexpr int PIXHIGHT = 480;
 //constexpr int FRAMERATE = 60;
 
-constexpr int PIXWIDTH = 640; //480p
-constexpr int PIXHIGHT = 480;
-constexpr int FRAMERATE = 60;
+//constexpr int PIXWIDTH = 640; //480p
+//constexpr int PIXHIGHT = 480;
+//constexpr int FRAMERATE = 60;
 
 //constexpr int PIXWIDTH = 1280; //720p
 //constexpr int PIXHIGHT = 720;
 //constexpr int FRAMERATE = 60;
+
+//HK
+constexpr int PIXWIDTH = 1920; //720p
+constexpr int PIXHIGHT = 1080;
+constexpr int FRAMERATE = 60;
 
 //位于像素位置的机构体
 #ifndef MYPOINT_STRUCT
@@ -42,4 +52,5 @@ struct MyPoint
 };//Point 结构体包含了鼠标点击widget的具体位置，和绘制圆的半径以及被点击的次数，这个次数是整体权重计算的比例
 #endif //! MYPOINT_STRUCT
 
-#endif GLOBALCONFIG_H
+
+#endif//! GLOBALCONFIG_H

@@ -5,10 +5,11 @@
 #include "Model_HMCutOut.h"
 #include "Model_HmSizeFactor.h"
 #include "Model_VideoDevice.h"
-
+#include "Model_CarIdentifyInfoDisplay.h"
 
 class MainViewControl;
 class Model_hotMapAndVideoDisplay;
+class Model_HKDeviceGetRealTimeData;
 
 class MainModel :public QObject
 {
@@ -30,6 +31,8 @@ public:
 	//数据采集
 	//opencv 视频流  使用IMX291摄像头
 	Model_VideoDevice* m_model_videoDevice = nullptr;
+	//海康相机
+	Model_HKDeviceGetRealTimeData* _pModel_HKDeviceGetRealTimeData = nullptr;
 
 	//过滤数据，显示特定频段的数据
 	Model_filteringSetting* _pModel_filteringSetting = nullptr;
@@ -42,6 +45,9 @@ public:
 
 	//热力图数据处理和图像显示
 	Model_hotMapAndVideoDisplay* _pModel_hotMapAndVideoDisplay = nullptr;
+
+	//超限处理
+	Model_CarIdentifyInfoDisplay* _pModel_CarIdentifyInfoDisplay = nullptr;
 
 protected:
 	void replotVideo();

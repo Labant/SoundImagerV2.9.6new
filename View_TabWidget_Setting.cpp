@@ -35,12 +35,15 @@ void View_TabWidget_Setting::initObject()
 	_pView_filteringSetting = new View_filteringSetting(this);
 	//裁剪数据setting
 	_pView_HMCutOut = new View_HMCutOut(this);
+	//车辆识别
+	this->_pView_CarIdentifyInfoDisplay = new View_CarIdentifyInfoDisplay(this);
 }
 
 void View_TabWidget_Setting::initLayout()
 {
 	this->addTab(this->mView_deviceChoose, QString::fromLocal8Bit("设备选择"));
 	this->addTab(this->_pTabWidget, QString::fromLocal8Bit("设置"));
+	this->addTab(this->_pView_CarIdentifyInfoDisplay, QString::fromLocal8Bit("车辆识别"));
 	this->_pTabWidget->addTab(this->m_View_AudioRecord, QString::fromLocal8Bit("音频录制"));
 	this->_pTabWidget->addTab(this->_pView_filteringSetting, QString::fromLocal8Bit("滤波设置"));
 	this->_pTabWidget->addTab(this->_pView_HMCutOut, QString::fromLocal8Bit("数据剪裁"));
@@ -63,6 +66,7 @@ void View_TabWidget_Setting::setCSS()
 
 	this->_pView_filteringSetting->setCSS(pal);
 	this->m_View_AudioRecord->setCSS(pal);
+	this->_pView_CarIdentifyInfoDisplay->setCSS(pal);
 	this->mView_deviceChoose->setCSS(pal);
 	this->_pView_HMCutOut->setCSS(pal);
 }

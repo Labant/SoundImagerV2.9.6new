@@ -197,11 +197,19 @@ public:
 */
 	void DrawCloudMap(QImage& src, const MyPoint position,QMutex& mutex)
 	{
+		//qDebug() << "11->!";//1！-2！：1ms
+		//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
 		QMutexLocker mlocker(&this->mMutex);//内部锁
+		//qDebug() << "12->!";//1！-2！：1ms
+		//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
 		QMutexLocker mOutlocker(&mutex);//外部锁
+		//qDebug() << "13->!";//1！-2！：1ms
+		//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
 
 		this->mImageSize = src.size();
 
+		//qDebug() << "14->!";//1！-2！：1ms
+		//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
 		if (this->_pAlphaImg == nullptr)
 		{
 			this->_pAlphaImg = new QImage(src.size(), QImage::Format_Alpha8);
@@ -212,52 +220,80 @@ public:
 			this->_pHotImg = new QImage(src.size(), QImage::Format_ARGB32);
 			this->_pHotImg->fill(Qt::transparent);//黑的的但是alpha是透明的
 		}
+		//qDebug() << "15->!";//1！-2！：1ms
+		//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
 
 		//重置云图与透明图填充
-		this->ResetAphalHotmap();
+		this->ResetAphalHotmap();//3ms
 
+		//qDebug() << "16->!";//1！-2！：1ms
+		//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
 		//画透明图
 		{
-			QPainter painter(this->_pAlphaImg);
-			painter.setPen(Qt::transparent);
+			//QPainter painter(this->_pAlphaImg);
+			//painter.setPen(Qt::transparent);
 
-			QRadialGradient gradient(position.posX, position.posY, position.radius);
-			gradient.setColorAt(0, QColor(0, 0, 0, 255));//255->alpha,at(0)是最中心的位置
-			gradient.setColorAt(1, QColor(0, 0, 0, 100));//at(1)是以radius为半径画圆的范围内，最边缘的位置
-			painter.setBrush(gradient);
-			painter.drawEllipse(QPointF(position.posX, position.posY), position.radius, position.radius);
+			//QRadialGradient gradient(position.posX, position.posY, position.radius);
+			//gradient.setColorAt(0, QColor(0, 0, 0, 255));//255->alpha,at(0)是最中心的位置
+			//gradient.setColorAt(1, QColor(0, 0, 0, 100));//at(1)是以radius为半径画圆的范围内，最边缘的位置
+			//painter.setBrush(gradient);
+			//painter.drawEllipse(QPointF(position.posX, position.posY), position.radius, position.radius);
 		}
+		//qDebug() << "17->!";//1！-2！：1ms
+		//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
 		//透明度转云图
 		{
-			//把alpha值转为颜色值
-			for (int row = 0; row < this->_pAlphaImg->height(); row++)
-			{
-				//dataimg QImage::Format_Alpha8，一个点1个字节
-				const uchar* aplha_data = this->_pAlphaImg->scanLine(row);//获取透明图上的扫描线，共700刚行
+			////把alpha值转为颜色值
+			//for (int row = 0; row < this->_pAlphaImg->height(); row++)
+			//{
+			//	//dataimg QImage::Format_Alpha8，一个点1个字节
+			//	const uchar* aplha_data = this->_pAlphaImg->scanLine(row);//获取透明图上的扫描线，共700刚行
 
-				//heatimg QImage::Format_ARGB32，一个点4个字节
-				this->line_heat = reinterpret_cast<QRgb*>(this->_pHotImg->scanLine(row));//获取热力图上的扫面线，共700行。
+			//	//heatimg QImage::Format_ARGB32，一个点4个字节
+			//	this->line_heat = reinterpret_cast<QRgb*>(this->_pHotImg->scanLine(row));//获取热力图上的扫面线，共700行。
 
 
-				for (int col = 0; col < this->_pAlphaImg->width(); col++)//把每行的扫面线取列位数，共1000列
-				{
-					//根据alpha透明度从颜色表取颜色
-					line_heat[col];
-					aplha_data[col];
-					this->_colorList[aplha_data[col]];
-					this->line_heat[col] = this->_colorList[aplha_data[col]];//取出的颜色再设置到_heatImg对应的地址
-				}
-			}
+			//	for (int col = 0; col < this->_pAlphaImg->width(); col++)//把每行的扫面线取列位数，共1000列
+			//	{
+			//		//根据alpha透明度从颜色表取颜色
+			//		line_heat[col];
+			//		aplha_data[col];
+			//		this->_colorList[aplha_data[col]];
+			//		this->line_heat[col] = this->_colorList[aplha_data[col]];//取出的颜色再设置到_heatImg对应的地址
+			//	}
+			//}
 		}
-
+		//qDebug() << "18->!";//1！-2！：1ms
+		//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
 		//在源图上画热力图
 		{
+			//qDebug() << "19->!";//1！-2！：1ms
+			//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
 			QPainter p(&src);
-			//绘制热力图
-			p.drawImage(0, 0, *this->_pHotImg);
-			//qDebug() << this->_pHotImg->save("_pHotImg.jpg","jpg", 100);
-		}
+			//qDebug() << "20->!";//1！-2！：1ms
+			//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
 
+			//p.setPen(Qt::red);
+
+			QRadialGradient gradient(position.posX, position.posY, position.radius);
+			gradient.setColorAt(0, QColor(Qt::red));//255->alpha,at(0)是最中心的位置
+			gradient.setColorAt(1, QColor(Qt::red));//at(1)是以radius为半径画圆的范围内，最边缘的位置
+			p.setBrush(gradient);
+			p.drawEllipse(QPointF(position.posX, position.posY), position.radius, position.radius);
+
+			//绘制热力图
+			//p.drawImage(0, 0, *this->_pHotImg);//60ms
+			//p.drawPixmap(src.rect(), QPixmap::fromImage(*this->_pHotImg), src.rect());//60ms
+			//qDebug() << this->_pHotImg->save("_pHotImg.jpg","jpg", 100);
+
+			//test
+			//p.drawImage(0, 0, src);//
+
+			//qDebug() << "21->!";//1！-2！：1ms
+			//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
+		}
+		//qDebug() << "22->!";//1！-2！：1ms
+		//qDebug() << QDateTime::currentMSecsSinceEpoch();//
 	};
 
 

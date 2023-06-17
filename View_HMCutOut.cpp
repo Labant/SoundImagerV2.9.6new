@@ -60,7 +60,7 @@ void View_HMCutOut::initLayout()
 	this->_pHmthresholdDisplay = new QLabel(QString::fromLocal8Bit("HM阈值:"));
 	this->_pHmthresholdValue = new QLineEdit(QString::fromLocal8Bit("0.0000007"));
 	this->_pGridLayout->addWidget(this->_pHmthresholdDisplay, 3, 0, 1, 1);
-	this->_pGridLayout->addWidget(this->_pHmthresholdValue, 3, 1, 1, 1);
+	this->_pGridLayout->addWidget(this->_pHmthresholdValue, 3, 1, 1, 2);
 
 	this->_pHm_P1D_Display = new QLabel(QString::fromLocal8Bit("目前HM最大值值:"));
 	this->_pHmHm_P1D_DisplayValue = new QLineEdit();

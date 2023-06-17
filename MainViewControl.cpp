@@ -401,6 +401,7 @@ void MainViewControl::setModel(MainModel* hendle)
 
 	//给予子线程是否显示hm
 	connect(this, &MainViewControl::on_signal_P1_DMaxValue, this->_pMainModel->_pModel_hotMapAndVideoDisplay, &Model_hotMapAndVideoDisplay::on_setP1_DValue, Qt::QueuedConnection);
+	//显示目前最大值
 	connect(this, &MainViewControl::on_signal_P1_DMaxValue, this->_mView_TabWidget_Setting->_pView_HMCutOut, &View_HMCutOut::on_showP1_DMaxValue);
 }
 
@@ -1887,7 +1888,7 @@ void MainViewControl::startSound()
 		//timer_thread_1->start();
 		emit this->on_signal_fftStart();
 
-		qDebug() << "this.thread:" << this->thread();
+		//qDebug() << "this.thread:" << this->thread();
 		//开始渲染热力图和视频帧
 		emit this->_pView_hotMapAndVideoDisplay->m_signal_start();
 

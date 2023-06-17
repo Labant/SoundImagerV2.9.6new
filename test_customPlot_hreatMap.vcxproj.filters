@@ -145,6 +145,21 @@
     <ClCompile Include="Model_hotMapAndVideoDisplay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Model_HKDeviceGetRealTimeData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Model_CarPlateIdentify.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\include_Easypr\xmlParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="View_CarIdentifyInfoDisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Model_CarIdentifyInfoDisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="include\qcustomplot.h">
@@ -210,6 +225,18 @@
     <QtMoc Include="View_hotMapAndVideoDisplay.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="Model_HKDeviceGetRealTimeData.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Model_CarPlateIdentify.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="View_CarIdentifyInfoDisplay.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Model_CarIdentifyInfoDisplay.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fftw3.h">
@@ -273,6 +300,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\CustomHm.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyNameSpace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\include_Easypr\xmlParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
