@@ -9,17 +9,19 @@
 #include <QDateTime>
 #include "GlobalConfig.hpp"
 #include "opencv2/core.hpp"
-
+#include "LvsDrawGradientRound.hpp"
 
 
 extern QQueue<cv::Mat> mHKFrames;
 extern QMutex mFramesMutex;
 extern QImage mM_image;
+extern cv::Mat g_BGRImage;
 
 class View_hotMapAndVideoDisplay;
 class Model_AudioCollector;
 class Model_VideoDevice;
 class CustomHm;
+//class LvsDrawGradientRound;
 class Model_HKDeviceGetRealTimeData;
 class Model_CarPlateIdentify;
 
@@ -105,6 +107,8 @@ private:
 
 	//热力图渲染 QPainter+QImage版本
 	CustomHm *_pCustomHm = nullptr;
+	//热力图渲染 QPainter+QImage版本 优化版
+	LvsDrawGradientRound mLvsDrawGradientRound;
 
 	//像素长宽
 	int mPixWidth = PIXWIDTH;
@@ -119,7 +123,7 @@ private:
 	//云图在像素中的点
 	MyPoint mPoint;
 	//云图的半径
-	int mRadius = 50;
+	int mRadius = 200;
 	//裁剪值中的最大值
 	double mCutoutMax = 0.0f;
 	//最大值位于裁剪矩阵中的位置

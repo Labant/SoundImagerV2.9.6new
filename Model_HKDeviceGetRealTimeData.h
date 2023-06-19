@@ -13,10 +13,6 @@
 
 using namespace cv;
 
-
-
-
-
 class View_DeviceChoose;
 class Model_CarPlateIdentify;
 
@@ -33,9 +29,17 @@ protected:
 
 private:
 	void init();
-	void initHKDevice();
-	void startCollectFrames();
-	void stopCollectFrames();
+	void initHKDevice();//初始化HK设备
+	void startCollectFrames();//开始采集视频帧
+	void stopCollectFrames();//停止采集视频帧
+
+	//新增2023.6.19KH识别车牌
+	void setMessageCallBack();//设置报警回调函数
+	void whitelist();//白名单比对
+	void blacklist();//黑名单比对
+	void setupAlarm();//报警布防
+	void closeAlarm();//报警撤防
+
 
 public:
 

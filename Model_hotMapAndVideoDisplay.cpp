@@ -278,19 +278,23 @@ void Model_hotMapAndVideoDisplay::renderFM()
 
 	
 		//海康相机
-		QImage mImage;
-		cv::Mat src;
+		static QImage mImage;
+		static cv::Mat src;
 		{
 			if (mHKFrames.isEmpty())
 				return;
 			//QQueue方案 + Lock方案
 			//qDebug() << "1->!";//1！-2！：1ms
-			//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
+			//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822e
 			QMutexLocker mLocker(&mFramesMutex);
 			//qDebug() << "2->!";//1！-2！：1ms
 			//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
 			src = mHKFrames.takeFirst();
 			mImage = CVMat2QImage::QCVMat2QImage(src);//.copy()
+
+			//src = g_BGRImage;
+			//mImage = CVMat2QImage::QCVMat2QImage(src);
+
 			//qDebug() << "3->!";//1！-2！：1ms
 			//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
 
@@ -313,20 +317,24 @@ void Model_hotMapAndVideoDisplay::renderFM()
 
 				//云图调用 调用外部锁
 				//this->_pCustomHm->DrawCloudMap(mImage, mPoint,mFramesMutex);
-				this->_pCustomHm->DrawCloudMap(mImage, mPoint, mFramesMutex);
+				//this->_pCustomHm->DrawCloudMap(mImage, mPoint, mFramesMutex);
+				//优化版本
+				this->mLvsDrawGradientRound.DrawGradientRound(mImage, mPoint, mFramesMutex);
 
 				//识别车辆 //子线程识别
-				emit this->on_signal_sendImageMat(src, this->P_1D_MAX_lvs);
+				//emit this->on_signal_sendImageMat(src, this->P_1D_MAX_lvs);
 			}
 
 
-			//qDebug() << "6->!";//1！-2！：1ms
+			//qDebug() << "5->!";//1！-2！：1ms
 			//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
 			//qDebug() << mImage.save("mImage.jpg","JPG",100);
 			this->_pView_hotMapAndVideoDisplay->setBackground(QPixmap::fromImage(mImage), true, Qt::KeepAspectRatioByExpanding);//KeepAspectRatio KeepAspectRatioByExpanding
 			//this->_pView_hotMapAndVideoDisplay->setBackground(QPixmap::fromImage(mM_image), true, Qt::KeepAspectRatioByExpanding);//KeepAspectRatio KeepAspectRatioByExpanding
 
 		}
+		//qDebug() << "6->!";//1！-2！：1ms
+		//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
 
 
 	}

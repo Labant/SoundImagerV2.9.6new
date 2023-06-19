@@ -11,15 +11,17 @@
 QQueue<cv::Mat> mHKFrames;
 QMutex mFramesMutex;
 QImage mM_image; //BGR转为QImage
+Mat g_BGRImage;// YUV转为BGR
 #endif//@HHKK
 
-Mat g_BGRImage;// YUV转为BGR
+//Mat g_BGRImage;// YUV转为BGR
 LONG g_nPort;//网络端口号
 LONG lUserID;
+int iNum = 0; 	//图片名称序号
+LONG IHandle = -1;//报警布防/撤防;
 
-
-
-
+string carNum;//车牌号							
+string LineByLine;//逐行读取文件 
 
 
 
@@ -45,14 +47,16 @@ void CALLBACK DecCBFun(long nPort, char* pBuf, long nSize, FRAME_INFO* pFrameInf
 
 		//qDebug() << "1:" << QDateTime::currentMSecsSinceEpoch();
 
-		cvtColor(YUVImage, g_BGRImage, COLOR_YUV2BGR_YV12);//耗时长 40ms左右 
 
 		{
-			QMutexLocker mLocker(&mFramesMutex);
-			//转为QImage //不在此转 render时转
-			mM_image = CVMat2QImage::QCVMat2QImage(g_BGRImage);
-		}
+			//QMutexLocker mLocker(&mFramesMutex);
 
+			cvtColor(YUVImage, g_BGRImage, COLOR_YUV2BGR_YV12);//耗时长 40ms左右 
+
+			////转为QImage //不在此转 render时转
+			//mM_image = CVMat2QImage::QCVMat2QImage(g_BGRImage);
+		}
+		//qDebug() << "2:" << QDateTime::currentMSecsSinceEpoch();
 
 
 		//存储进队列
@@ -107,6 +111,96 @@ void CALLBACK g_RealDataCallBack_V30(LONG lPlayHandle, DWORD dwDataType, BYTE* p
 	//qDebug() << "2:" << QDateTime::currentMSecsSinceEpoch();
 }
 
+//报警回调函数
+void CALLBACK MSesGCallback(LONG lCommand, NET_DVR_ALARMER* pAlarmer, char* pAlarmInfo, DWORD dwBufLen, void* pUser)
+{
+
+	//ofstream oFile;//定义文件输出流
+	//oFile.open("车牌号.csv", ofstream::app);    //打开要输出的文件 	
+	//获取系统时间
+	SYSTEMTIME sys;
+	GetLocalTime(&sys);
+	cout << sys.wYear << "-" << sys.wMonth << "-" << sys.wDay << " " << sys.wHour << ":" << sys.wMinute << ":" << sys.wSecond << endl;
+
+	int i = 0;
+	char filename[100];
+	FILE* fSnapPic = NULL;
+	FILE* fSnapPicPlate = NULL;
+	//以下代码仅供参考，实际应用中不建议在该回调函数中直接处理数据保存文件，
+	//例如可以使用消息的方式(PostMessage)在消息响应函数里进行处理。
+	switch (lCommand) {
+		//交通抓拍结果(老报警消息)
+	case COMM_UPLOAD_PLATE_RESULT: {
+		NET_DVR_PLATE_RESULT struPlateResult = { 0 };
+		memcpy(&struPlateResult, pAlarmInfo, sizeof(struPlateResult));
+		qDebug() << QString::fromLocal8Bit("车牌：") << QString(QString::fromLocal8Bit(struPlateResult.struPlateInfo.sLicense));
+		//printf("车牌号: %s\n", struPlateResult.struPlateInfo.sLicense);//车牌号	
+		// oFile << struPlateResult.struPlateInfo.sLicense << endl;//保存车牌号到csv文件		
+		//oFile << struPlateResult.struPlateInfo.sLicense << "," << sys.wYear << "-" << sys.wMonth << "-" << sys.wDay << " " << sys.wHour << ":" << sys.wMinute << ":" << sys.wSecond << endl;//保存车牌号到csv文件	
+		//场景图
+		if (struPlateResult.dwPicLen != 0 && struPlateResult.byResultType == 1)
+		{
+			//sprintf(filename, "./pic/%s.jpg", struPlateResult.struPlateInfo.sLicense);
+			//fSnapPic = fopen(filename, "wb");
+			//fwrite(struPlateResult.pBuffer1, struPlateResult.dwPicLen, 1, fSnapPic);
+			//iNum++;
+			//fclose(fSnapPic);
+		}
+		//车牌图
+		if (struPlateResult.dwPicPlateLen != 0 && struPlateResult.byResultType == 1)
+		{
+			//sprintf(filename, "./pic/1/%s.jpg", struPlateResult.struPlateInfo.sLicense);
+			//fSnapPicPlate = fopen(filename, "wb");
+			//fwrite(struPlateResult.pBuffer1, struPlateResult.dwPicLen, 1, fSnapPicPlate);
+			//iNum++;
+			//fclose(fSnapPicPlate);
+		}
+		//其他信息处理......
+		break;
+	}
+								 //交通抓拍结果(新报警消息)
+	case COMM_ITS_PLATE_RESULT: {
+		NET_ITS_PLATE_RESULT struITSPlateResult = { 0 };
+		memcpy(&struITSPlateResult, pAlarmInfo, sizeof(struITSPlateResult));
+		for (i = 0; i < struITSPlateResult.dwPicNum; i++)
+		{
+			qDebug() << QString::fromLocal8Bit("车牌：") << QString(QString::fromLocal8Bit(struITSPlateResult.struPlateInfo.sLicense));
+			//printf("车牌号: %s\n", struITSPlateResult.struPlateInfo.sLicense);//车牌号
+			carNum = struITSPlateResult.struPlateInfo.sLicense;
+			//oFile << carNum << "," << sys.wYear << "-" << sys.wMonth << "-" << sys.wDay << " " << sys.wHour << ":" << sys.wMinute << ":" << sys.wSecond << endl;//保存车牌号到csv文件	
+			if ((struITSPlateResult.struPicInfo[i].dwDataLen != 0) && (struITSPlateResult.struPicInfo[i].byType == 1) || (struITSPlateResult.struPicInfo[i].byType == 2))
+			{
+				//sprintf(filename, "./pic/%s_%d.jpg", struITSPlateResult.struPlateInfo.sLicense, i);
+				//fSnapPic = fopen(filename, "wb");
+				//fwrite(struITSPlateResult.struPicInfo[i].pBuffer, struITSPlateResult.struPicInfo[i].dwDataLen, 1, fSnapPic);
+				//iNum++;
+				//fclose(fSnapPic);
+			}
+			//车牌小图片
+			if ((struITSPlateResult.struPicInfo[i].dwDataLen != 0) && (struITSPlateResult.struPicInfo[i].byType == 0))
+			{
+				//sprintf(filename, "./pic/1/%s_%d.jpg", struITSPlateResult.struPlateInfo.sLicense, i);
+				//fSnapPicPlate = fopen(filename, "wb");
+				//fwrite(struITSPlateResult.struPicInfo[i].pBuffer, struITSPlateResult.struPicInfo[i].dwDataLen, 1, \
+				//	fSnapPicPlate);
+				//iNum++;
+				//fclose(fSnapPicPlate);
+			}
+			//其他信息处理......
+		}
+		//Whitelist();//白名单比对
+		//Blacklist();//黑名单比对
+		break;
+	}
+	default: {
+		std::cout << lCommand << endl;
+		break;
+	}
+	}
+
+	//oFile.close();//关闭文件
+	return;
+}
 
 
 Model_HKDeviceGetRealTimeData::Model_HKDeviceGetRealTimeData(View_DeviceChoose* handle, QObject* parent)
@@ -155,7 +249,7 @@ void Model_HKDeviceGetRealTimeData::init()
 void Model_HKDeviceGetRealTimeData::initHKDevice()
 {
 	// 初始化
-	NET_DVR_Init();
+	qDebug()<<NET_DVR_Init();
 	// 设置连接时间与重连时间
 	NET_DVR_SetConnectTime(2000, 1);
 	NET_DVR_SetReconnect(10000, true);
@@ -242,6 +336,10 @@ void Model_HKDeviceGetRealTimeData::initHKDevice()
 	struPlayInfo.dwLinkMode = 0;// 0：TCP方式,1：UDP方式,2：多播方式,3 - RTP方式，4-RTP/RTSP,5-RSTP/HTTP 
 	struPlayInfo.bBlocked = 0; //0-非阻塞取流, 1-阻塞取流, 如果阻塞SDK内部connect失败将会有5s的超时才能够返回,不适合于轮询取流操作.
 
+	//设置布防回调函数
+	this->setMessageCallBack();
+	//设置报警
+	this->setupAlarm();
 }
 
 void Model_HKDeviceGetRealTimeData::startCollectFrames()
@@ -270,6 +368,96 @@ void Model_HKDeviceGetRealTimeData::stopCollectFrames()
 	if (lRealPlayHandle < 0)
 		return;
 
+	//关闭报警
+	this->closeAlarm();
+
 	//关闭预览 实时推流
 	NET_DVR_StopRealPlay(lRealPlayHandle);
+}
+
+void Model_HKDeviceGetRealTimeData::setMessageCallBack()
+{
+	qDebug()<<__FUNCDNAME__ << NET_DVR_SetDVRMessageCallBack_V30(MSesGCallback, NULL);
+}
+
+void Model_HKDeviceGetRealTimeData::whitelist()
+{
+	ifstream iFile;
+	iFile.open("白名单.csv", ios::in);
+	if (!iFile.is_open())
+		std::cout << "找不到文件";
+
+	while (getline(iFile, LineByLine))
+	{
+		if (LineByLine.empty()) {
+			continue;
+		}
+		else {
+			size_t found = LineByLine.find(carNum.substr(4, 8));//carNum.substr(4, 8) 截取车牌号“蓝新NF8202”为NF8202
+			if (found != std::string::npos) {
+				std::cout << "白名单:" << LineByLine << '\n';
+			}
+
+		}
+	}
+	iFile.close();//关闭文件
+}
+
+void Model_HKDeviceGetRealTimeData::blacklist()
+{
+	ifstream iFile;
+	iFile.open("黑名单.csv", ios::in);
+	if (!iFile.is_open())
+		std::cout << "找不到文件";
+
+	while (getline(iFile, LineByLine))
+	{
+		if (LineByLine.empty()) {
+			continue;
+		}
+		else {
+			size_t found = LineByLine.find(carNum.substr(4, 8));//carNum.substr(4, 8) 截取车牌号“蓝新NF8202”为NF8202
+			if (found != std::string::npos) {
+				std::cout << "黑名单:" << LineByLine << '\n';
+			}
+
+		}
+	}
+	iFile.close();//关闭文件
+}
+
+void Model_HKDeviceGetRealTimeData::setupAlarm()
+{
+	//启动布防
+	NET_DVR_SETUPALARM_PARAM struSetupParam = { 0 };
+	struSetupParam.dwSize = sizeof(NET_DVR_SETUPALARM_PARAM);
+
+
+	struSetupParam.byAlarmInfoType = 1;//上传报警信息类型：0-老报警信息(NET_DVR_PLATE_RESULT), 1-新报警信息(NET_ITS_PLATE_RESULT)
+	struSetupParam.byLevel = 1;//布防优先级：0- 一等级（高），1- 二等级（中），2- 三等级（低）
+	//bySupport 按位表示，值：0 - 上传，1 - 不上传;  bit0 - 表示二级布防是否上传图片;
+
+
+	IHandle = NET_DVR_SetupAlarmChan_V41(lUserID, &struSetupParam);//建立报警上传通道，获取报警等信息。
+	if (IHandle < 0)
+	{
+		std::cout << "NET_DVR_SetupAlarmChan_V41 Failed! Error number：" << NET_DVR_GetLastError() << std::endl;
+		NET_DVR_Logout(lUserID);
+		NET_DVR_Cleanup();
+		return;
+	}
+	std::cout << "\n" << endl;
+}
+
+void Model_HKDeviceGetRealTimeData::closeAlarm()
+{
+	//撤销布防上传通道
+	if (!NET_DVR_CloseAlarmChan_V30(IHandle))//布防句柄IHandle
+	{
+		std::cout << "NET_DVR_CloseAlarmChan_V30 Failed! Error number：" << NET_DVR_GetLastError() << std::endl;
+		NET_DVR_Logout(lUserID);
+		NET_DVR_Cleanup();
+		return;
+	}
+	IHandle = -1;//布防句柄;
 }

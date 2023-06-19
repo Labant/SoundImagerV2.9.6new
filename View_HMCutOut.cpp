@@ -32,7 +32,7 @@ void View_HMCutOut::initLayout()
 		this->_pSlider[i]->setFixedSize(300, 50);
 		//this->_pSlider[i]->move(10, 50);
 		this->_pSlider[i]->setRange(1, i > 0 ? 60 : 90);//0- 180 ==>/2 ==>90，分别最大为90，60。 以0为中心环形对称裁剪
-		this->_pSlider[i]->setValue(30);
+		this->_pSlider[i]->setValue(i > 0 ? 41 : 31);
 		this->_pSlider[i]->setSingleStep(1);
 		this->_pSlider[i]->setStyleSheet("QSlider{background-color: transparent;}"
 			"QSlider::groove:horizontal{border: 0px solid red;background: rgb(31, 147, 251);height:20px;border-radius: 10px;}"

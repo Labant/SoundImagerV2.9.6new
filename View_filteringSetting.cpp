@@ -15,8 +15,8 @@ void View_filteringSetting::initLayout()
 	this->_pPushButtonSure = new QPushButton(QString::fromLocal8Bit("È·¶¨"));
 	this->_pLabelTxt1 = new QLabel(QString::fromLocal8Bit("ÂË²¨"));
 	this->_pLabelTxt2 = new QLabel(QString::fromLocal8Bit("kHz"));
-	this->_pLELow = new QLineEdit(QString::fromLocal8Bit("0.0"));
-	this->_pLEHigh = new QLineEdit(QString::fromLocal8Bit("0.0"));
+	this->_pLELow = new QLineEdit(QString::fromLocal8Bit("0.7"));
+	this->_pLEHigh = new QLineEdit(QString::fromLocal8Bit("1.5"));
 
 	//layout
 	this->_pHBoxLayout = new QHBoxLayout();

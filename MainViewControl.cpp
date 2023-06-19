@@ -800,19 +800,19 @@ void MainViewControl::invokeDLL()
 		//p置反
 		for (int i = 0; i < 4800; i++)
 		{
-			//////x[i] = -x[i];
-			//////y[i] = -y[i];
-			z[i] = -z[i];
+			//x[i] = -x[i];
+			y[i] = -y[i];
+			//z[i] = -z[i];
 			//p[i] = -p[i];//置反后ni卡ok
 		}
 		break;
 	default:
 		break;
 	}
-	////第一版本的rsp.txt
-	////频响校准
+	//第一版本的rsp.txt
+	//频响校准
 	//_pCalibrationDll->invokeDllAndWrite(x, y, z);
-	////通带过滤
+	//通带过滤
 	//if (isFilt)
 	//	_pFiltDll->filtDataAndWrite(p, x, y, z, filt_low, filt_hight, FS);
 
@@ -955,7 +955,9 @@ void MainViewControl::read()
 		memcpy(this->x, this->_pMainModel->_pModel_AudioCollector->mRawData.first().xData, sizeof(double) * SAMPLE);
 		memcpy(this->y, this->_pMainModel->_pModel_AudioCollector->mRawData.first().yData, sizeof(double) * SAMPLE);
 		memcpy(this->z, this->_pMainModel->_pModel_AudioCollector->mRawData.first().zData, sizeof(double) * SAMPLE);
-		this->_pMainModel->_pModel_AudioCollector->mRawData.removeFirst();
+		if(!this->_pMainModel->_pModel_AudioCollector->mRawData.isEmpty())
+			this->_pMainModel->_pModel_AudioCollector->mRawData.removeFirst();
+
 	}
 
 
@@ -1647,7 +1649,7 @@ void MainViewControl::realDraw_plot_azimAngle()
 void MainViewControl::initCamera(int camIndex)
 {
 	this->_pMainModel->m_model_videoDevice->setDevice(camIndex);
-	emit this->m_signal_initCamera();
+	//emit this->m_signal_initCamera();
 	//是否初始化相机
 	isInitCamera = 1;
 

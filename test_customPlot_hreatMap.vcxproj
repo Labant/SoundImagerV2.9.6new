@@ -22,6 +22,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -37,7 +38,7 @@
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="QtSettings">
-    <QtInstall>Qt5.15.2_msvc2019</QtInstall>
+    <QtInstall>5.15.2_msvc2019</QtInstall>
     <QtModules>core;gui;multimedia;widgets;printsupport;multimediawidgets</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
   </PropertyGroup>
@@ -57,11 +58,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">
     <IncludePath>$(SolutionDir);I:\WORK\09_share\glew;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.5\include;I:\WORK\09_share\ni;I:\WORK\12_OpenCV\OpenCV3.2\includeAndLib\include;I:\WORK\12_OpenCV\OpenCV3.2\includeAndLib\include\opencv2;I:\WORK\09_share\rs\librealsense2;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\include;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\include\include_HK;I:\WORK\11_GitHubCodeDownload\EasyPR-master_use_310\EasyPR-master\include;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\include\include_Easypr\model;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\include\include_Easypr;$(IncludePath)</IncludePath>
-    <LibraryPath>../../09_share/ni_lib;../../09_share/rs_lib;../../06_Code/test_customPlot_hreatMap_SphereAndHM_V2.9.5/lib;../../09_share/glew_lib;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\ClientDemoDll;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\HCNetSDKCom;E:\lvs\17_海康SDK\CH-HCNetSDKV6.1.9.47_build20221111_win32\库文件;I:\WORK\13_EasyPR\x86;I:\WORK\12_OpenCV\OpenCV3.2\includeAndLib\x86;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\lib;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\lib\EasyPR;$(LibraryPath)</LibraryPath>
+    <LibraryPath>../../09_share/ni_lib;../../09_share/rs_lib;../../06_Code/test_customPlot_hreatMap_SphereAndHM_V2.9.5/lib;../../09_share/glew_lib;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\ClientDemoDll;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\HCNetSDKCom;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\lib\lib_HK;I:\WORK\13_EasyPR\x86;I:\WORK\12_OpenCV\OpenCV3.2\includeAndLib\x86;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\lib;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\lib\EasyPR;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
-    <IncludePath>G:\WORK\09_share\rs\librealsense2;G:\WORK\09_share\ni;G:\WORK\09_share\opencv2;G:\WORK\09_share;G:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.5\include;G:\WORK\09_share\glew;I:\WORK\09_share\rs\librealsense2;I:\WORK\09_share\ni;I:\WORK\09_share\opencv2;I:\WORK\09_share;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\include;I:\WORK\09_share\glew;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\include\include_HK;$(SolutionDir);$(IncludePath)</IncludePath>
-    <LibraryPath>G:\WORK\09_share\ni_lib;G:\WORK\09_share\rs_lib;G:\WORK\09_share\opencv_lib;G:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.5\lib;G:\WORK\09_share\glew_lib;I:\WORK\09_share\ni_lib;I:\WORK\09_share\rs_lib;I:\WORK\09_share\opencv_lib;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.5\lib;I:\WORK\09_share\glew_lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir);I:\WORK\09_share\glew;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.5\include;I:\WORK\09_share\ni;I:\WORK\12_OpenCV\OpenCV3.2\includeAndLib\include;I:\WORK\12_OpenCV\OpenCV3.2\includeAndLib\include\opencv2;I:\WORK\09_share\rs\librealsense2;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\include;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\include\include_HK;I:\WORK\11_GitHubCodeDownload\EasyPR-master_use_310\EasyPR-master\include;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\include\include_Easypr\model;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\include\include_Easypr;$(IncludePath)</IncludePath>
+    <LibraryPath>../../09_share/ni_lib;../../09_share/rs_lib;../../06_Code/test_customPlot_hreatMap_SphereAndHM_V2.9.5/lib;../../09_share/glew_lib;I:\WORK\13_EasyPR\x64;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\ClientDemoDll;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\HCNetSDKCom;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\lib\lib_HK;I:\WORK\12_OpenCV\OpenCV3.2\includeAndLib\x86;I:\WORK\06_Code\test_customPlot_hreatMap_SphereAndHM_V2.9.6\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
@@ -69,16 +70,16 @@
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>E:\lvs\04_Qt_test\test_customPlot_hreatMap_SphereAndHM_V2.9.5\include;C:\Program Files (x86)\Intel RealSense SDK 2.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
-      <AdditionalDependencies>interp_imagesc_ver01.lib;NIDAQmx.lib;OpenGL32.lib;calibration.lib;libfftw3-3.lib;libfftw3f-3.lib;libfftw3l-3.lib;direction_spl.lib;glew32.lib;opencv_world460.lib;filt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libeasypr.lib;opencv_world320.lib;HCCore.lib;GdiPlus.lib;PlayCtrl.lib;HCNetSDK.lib;freeglut.lib;NIDAQmx.lib;OpenGL32.lib;calibration.lib;libfftw3-3.lib;libfftw3f-3.lib;libfftw3l-3.lib;direction_spl.lib;glew32.lib;opencv_world460.lib;filt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Program Files (x86)\Intel RealSense SDK 2.0\lib_x86\release;D:\opencv460\opencv\build\x86\vc17\lib;E:\lvs\04_Qt_test\test_customPlot_hreatMap_prueSphere_prueOpenGL\include\glew-2.1.0\lib\Release\Win32;E:\lvs\04_Qt_test\test_customPlot_hreatMap_prueSphere_prueOpenGL\x86_lib;E:\lvs\04_Qt_test\test_customPlot_hreatMap_prueSphere_prueOpenGL\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Intel RealSense SDK 2.0\include;D:\opencv460\opencv\build\include;D:\opencv460\opencv\build\include\opencv2;E:\lvs\04_Qt_test\test_customPlot_hreatMap_prueSphere_prueOpenGL\include\glew-2.1.0\include;E:\lvs\04_Qt_test\test_customPlot_hreatMap_prueSphere_prueOpenGL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="Configuration">
@@ -86,7 +87,7 @@
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -181,6 +182,7 @@
     <QtMoc Include="Model_CarPlateIdentify.h" />
     <ClInclude Include="include\include_Easypr\xmlParser.h" />
     <QtMoc Include="Model_CarIdentifyInfoDisplay.h" />
+    <ClInclude Include="include\LvsDrawGradientRound.hpp" />
     <ClInclude Include="MyNameSpace.h" />
     <ClInclude Include="resource.h" />
     <QtMoc Include="View_CarIdentifyInfoDisplay.h" />
