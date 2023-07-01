@@ -149,6 +149,13 @@ void MainViewControl::realDrawplot()
 			return;
 		}
 		break;
+
+	case CAPTURETYPE::VKCaptureCard:
+		if (this->_pMainModel->_pModel_AudioCollector->_pTcpDiscoverServer == nullptr)
+		{
+			return;
+		}
+		break;
 	default:
 		break;
 	}
@@ -198,23 +205,26 @@ void MainViewControl::doFFTData()
 	fft_change->Time2Frequency(p, x, y, z ,SAMPLE);
 
 	//plot_freqDomain_p
-	//传入时域数据 QVector<double>类型
+	//传入频域数据 QVector<double>类型
 	QVector<double> xData_p_fre, yData_p_fre, xData_x_fre, yData_x_fre, xData_y_fre, yData_y_fre, xData_z_fre, yData_z_fre;
+
 	//用于渲染spectrum的数据
 	QVector<double> xData_P_spectrum, xData_X_spectrum, xData_Y_spectrum, xData_Z_spectrum;//xAxis数据
 	QVector<double> yData_P_spectrum, yData_X_spectrum, yData_Y_spectrum, yData_Z_spectrum;//yAxis数据
 
+
+
 	//获取fft后的数据
-	for (int i = 0; i < 2400; i++)
+	for (int i = 0; i < (SAMPLE>>1); i++)
 	{
 		//对频域x轴数据整合
-		xData_p_fre.append(i);
+		xData_p_fre.append(this->mFrequncyBin[i]);
 		yData_p_fre.append(fft_change->fft_p[i]);
-		xData_x_fre.append(i);
+		xData_x_fre.append(this->mFrequncyBin[i]);
 		yData_x_fre.append(fft_change->fft_x[i]);
-		xData_y_fre.append(i);
+		xData_y_fre.append(this->mFrequncyBin[i]);
 		yData_y_fre.append(fft_change->fft_y[i]);
-		xData_z_fre.append(i);
+		xData_z_fre.append(this->mFrequncyBin[i]);
 		yData_z_fre.append(fft_change->fft_z[i]);
 
 		//对语谱图y轴数据进行整合
@@ -365,7 +375,8 @@ void MainViewControl::doCameraData()
 void MainViewControl::findVideoDevs()
 {
 	this->_mView_TabWidget_Setting->mView_deviceChoose->m_comBox[1]->clear();
-	this->_mView_TabWidget_Setting->mView_deviceChoose->m_comBox[1]->addItems(this->_pMainModel->m_model_videoDevice->getDeviceList());
+	//this->_mView_TabWidget_Setting->mView_deviceChoose->m_comBox[1]->addItems(this->_pMainModel->m_model_videoDevice->getDeviceList());
+	this->_mView_TabWidget_Setting->mView_deviceChoose->m_comBox[1]->addItems(QStringList("HK"));
 	qDebug() << "=======================wei zhi xing wan bi================================";
 }
 
@@ -408,7 +419,7 @@ void MainViewControl::setModel(MainModel* hendle)
 void MainViewControl::initLoyout()
 {
 	this->setWindowTitle(QString::fromLocal8Bit("声源定位 | 苏州理声科技"));
-	this->setWindowIcon(QIcon(QPixmap(QDir::currentPath() + "/image/logo.png")));
+	this->setWindowIcon(QIcon(QPixmap(QDir::currentPath() + "/image/ls_logo.ico")));
 	this->setMinimumSize(1600, 900);//16:9
 	//this->setMinimumSize(1600, 1200);
 	//plot_heatmap = new QCustomPlot(this);//热力图
@@ -563,6 +574,9 @@ void MainViewControl::initLoyout()
 	//创建图像
 	creatPlot();
 
+	//计算频域对应的XAxis值
+	this->calcFrequncyBin();
+
 }
 void MainViewControl::initConnectedAndUpData()
 {
@@ -599,7 +613,7 @@ void MainViewControl::initConnectedAndUpData()
 	connect(_mView_TabWidget_Setting->mView_deviceChoose, &View_DeviceChoose::m_signal_stop, this, &MainViewControl::stopWorkSound);
 
 	//设备选择并开始 视频
-	connect(_mView_TabWidget_Setting->mView_deviceChoose->m_pushButton[1], &QPushButton::clicked, this, &MainViewControl::initCamera);
+	//connect(_mView_TabWidget_Setting->mView_deviceChoose->m_pushButton[1], &QPushButton::clicked, this, &MainViewControl::initCamera);
 	
 	//设备类型选择
 	connect(_mView_TabWidget_Setting->mView_deviceChoose, &View_DeviceChoose::m_signal_captureType, this, &MainViewControl::m_solt_chooseCaptureType);
@@ -633,15 +647,22 @@ void MainViewControl::initConnectedAndUpData()
 			//阈值开始工作
 			mThresholdVT = this->m_freTime_general->_pView_ValueOfTFSetting->pLineVT->text().toFloat();
 			mThresholdVF = this->m_freTime_general->_pView_ValueOfTFSetting->pLineVF->text().toFloat();
+
+			//Auto btn设置"Auto"描述
+			this->m_freTime_general->_pView_ValueOfTFSetting->_pPtnAuto->setText("Auto");
 		}
 		else
 		{
 			if (!this->m_freTime_general->_pView_ValueOfTFSetting->mAutoValue)this->m_freTime_general->_pView_ValueOfTFSetting->mAutoValue = 1;
+			//Auto btn设置"Manual"描述
+			this->m_freTime_general->_pView_ValueOfTFSetting->_pPtnAuto->setText("Manual");
 		}
 		
-		//根据自动按钮来设定值
+		//根据自动按钮来设定是否可以键入QLineEdit值
 		this->m_freTime_general->_pView_ValueOfTFSetting->pLineVF->setEnabled(!this->m_freTime_general->_pView_ValueOfTFSetting->mAutoValue);
 		this->m_freTime_general->_pView_ValueOfTFSetting->pLineVT->setEnabled(!this->m_freTime_general->_pView_ValueOfTFSetting->mAutoValue);
+
+
 		});
 	//带通滤波
 	//QLineEdit中当Auto按钮为真并且触发returnPressed信号
@@ -654,6 +675,13 @@ void MainViewControl::initConnectedAndUpData()
 		mThresholdVF = this->m_freTime_general->_pView_ValueOfTFSetting->pLineVF->text().toFloat();
 		});
 
+
+	//2023.6.26新增
+	//裁剪中心点设置
+	//裁剪变更Y轴中心点
+	connect(this->_mView_TabWidget_Setting->_pView_HMCutOut->_pHmHmCutoutCenter, &QLineEdit::returnPressed, _pView_hotMapAndVideoDisplay, [=]() {
+		this->_pView_hotMapAndVideoDisplay->on_signal_setYCutoutCenter((quint16)this->_mView_TabWidget_Setting->_pView_HMCutOut->_pHmHmCutoutCenter->text().toUInt());
+		});
 }
 
 void MainViewControl::setCSS()
@@ -955,8 +983,8 @@ void MainViewControl::read()
 		memcpy(this->x, this->_pMainModel->_pModel_AudioCollector->mRawData.first().xData, sizeof(double) * SAMPLE);
 		memcpy(this->y, this->_pMainModel->_pModel_AudioCollector->mRawData.first().yData, sizeof(double) * SAMPLE);
 		memcpy(this->z, this->_pMainModel->_pModel_AudioCollector->mRawData.first().zData, sizeof(double) * SAMPLE);
-		if(!this->_pMainModel->_pModel_AudioCollector->mRawData.isEmpty())
-			this->_pMainModel->_pModel_AudioCollector->mRawData.removeFirst();
+		//if(!this->_pMainModel->_pModel_AudioCollector->mRawData.isEmpty())
+		this->_pMainModel->_pModel_AudioCollector->mRawData.removeFirst();
 
 	}
 
@@ -1648,7 +1676,7 @@ void MainViewControl::realDraw_plot_azimAngle()
 }
 void MainViewControl::initCamera(int camIndex)
 {
-	this->_pMainModel->m_model_videoDevice->setDevice(camIndex);
+	this->_pMainModel->m_model_videoDevice->setDevice(camIndex);//-->打开相机
 	//emit this->m_signal_initCamera();
 	//是否初始化相机
 	isInitCamera = 1;
@@ -1800,11 +1828,15 @@ void MainViewControl::m_solt_chooseCaptureType(int type)
 	switch (type)
 	{
 	case CAPTURETYPE::SoundCard:
-		mCaptrueType = CAPTURETYPE::SoundCard;
+		this->mCaptrueType = CAPTURETYPE::SoundCard;
 		this->_pMainModel->_pModel_AudioCollector->mCaptrueType = this->mCaptrueType;
 		break;
 	case CAPTURETYPE::NICaptureCard:
-		mCaptrueType = CAPTURETYPE::NICaptureCard;
+		this->mCaptrueType = CAPTURETYPE::NICaptureCard;
+		this->_pMainModel->_pModel_AudioCollector->mCaptrueType = this->mCaptrueType;
+		break;
+	case CAPTURETYPE::VKCaptureCard:
+		this->mCaptrueType = CAPTURETYPE::VKCaptureCard;
 		this->_pMainModel->_pModel_AudioCollector->mCaptrueType = this->mCaptrueType;
 		break;
 	default:
@@ -1861,6 +1893,17 @@ void MainViewControl::On_setHmFactorValue(uInt16 value)
 
 	//this->mHmSizeFactor = 1.05;
 	qDebug() << "this->mHmSizeFactor:" << this->mHmSizeFactor;
+}
+
+
+void MainViewControl::calcFrequncyBin()
+{
+	this->mFrequncyBin.clear();
+	//X Axis对应频率点
+	for (int i = 0; i < SAMPLE; i++)
+	{
+		this->mFrequncyBin.append(double(FS / 1000) * i / double(SAMPLE));
+	}
 }
 
 //计算数组中的大小
@@ -1925,6 +1968,25 @@ void MainViewControl::stopWorkSound()
 			emit this->_mView_TabWidget_Setting->mView_deviceChoose->m_signal_modelStop();
 			emit this->_pView_hotMapAndVideoDisplay->m_signal_stop();
 			this->_mView_TabWidget_Setting->mView_deviceChoose->m_niDevice->stop();
+			//mView_deviceChoose->m_niDevice = nullptr;
+			qDebug() << "stopSoundDevice";
+		}
+		break;
+	case CAPTURETYPE::VKCaptureCard:
+		if (this->_pMainModel->_pModel_AudioCollector->_pTcpDiscoverServer != nullptr)
+		{
+			//fft停止
+			//timer_thread_1->stop();
+			emit this->on_signal_fftStop();
+			//主线程渲染停止
+			timer.stop();
+			//采集器停止采集
+			emit this->_pMainModel->_pModel_AudioCollector->on_signal_stopTimer();
+			//停止渲染热力图和视频帧
+			emit this->_mView_TabWidget_Setting->mView_deviceChoose->m_signal_modelStop();
+			emit this->_pView_hotMapAndVideoDisplay->m_signal_stop();
+
+			//this->_pMainModel->_pModel_AudioCollector->_pTcpDiscoverServer->stop();//停止解析
 			//mView_deviceChoose->m_niDevice = nullptr;
 			qDebug() << "stopSoundDevice";
 		}

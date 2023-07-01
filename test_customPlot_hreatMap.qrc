@@ -2,7 +2,6 @@
     <qresource prefix="/MainViewControl">
         <file>lib/CalibrationDll/rsp.txt</file>
         <file>image/gray.png</file>
-        <file>image/main.ico</file>
         <file>lib/CalibrationDll/rsp_3Step.txt</file>
     </qresource>
 </RCC>

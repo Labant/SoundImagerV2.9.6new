@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
 	//Æô¶¯¶¯»­
-	QPixmap pix(QDir::currentPath()+"/image/logo.png");
+	QPixmap pix(QDir::currentPath()+"/image/main_ls800x600.png");
 	QSplashScreen splash(pix);
 	splash.show();
 	a.processEvents();

@@ -18,8 +18,8 @@ void View_HmSizeFactor::initLayout()
 	this->_pSlider->setFixedSize(300, 50);
 	//this->_pSlider[i]->move(10, 50);
 	//this->_pSlider->setRange(50, 90);//
-	this->_pSlider->setRange(5, 90);//
-	this->_pSlider->setValue(50);
+	this->_pSlider->setRange(5, 600);//
+	this->_pSlider->setValue(200);
 	this->_pSlider->setSingleStep(1);
 	this->_pSlider->setObjectName("View_HmSizeFactor__pSlider");
 	this->_pSlider->setStyleSheet("#View_HmSizeFactor__pSlider{background-color: transparent;}"

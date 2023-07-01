@@ -16,14 +16,13 @@ extern QQueue<cv::Mat> mHKFrames;
 extern QMutex mFramesMutex;
 extern QImage mM_image;
 extern cv::Mat g_BGRImage;
+extern QString mLicensePlate;
+extern QString mLicenseLane;
 
 class View_hotMapAndVideoDisplay;
-class Model_AudioCollector;
-class Model_VideoDevice;
+class Model_VideoDevice;//opencv版本
 class CustomHm;
-//class LvsDrawGradientRound;
 class Model_HKDeviceGetRealTimeData;
-class Model_CarPlateIdentify;
 
 /**
  * 功能：
@@ -57,6 +56,10 @@ private:
 	void on_setCarPlate(QString str);
 	void on_setSoundPw(double pw);
 	void on_setLane(QString lane);
+
+	//2023.6.26新增
+	//裁剪中心点设置
+	void on_setCutoutCenter(quint16);
 signals:
 	void on_signal_replot_video();
 	void on_signal_replot_hotmap();
@@ -66,6 +69,8 @@ signals:
 	void on_signal_setCarLane(QString);
 	//void on_signal_sendImageMat(cv::Mat src);
 	void on_signal_sendImageMat(cv::Mat src,double targetValue);
+
+
 
 public:
 	//cv::Mat test_;
@@ -130,8 +135,16 @@ private:
 	QPoint mMaxPos;
 	//裁剪偏移
 	int mOffset = 45;
+	//保存上一个车牌
+	QString mOldLicensePlate;
+	//保存上一个车道号
+	QString mOldLicenseLane;
 
-	//车牌识别
-	Model_CarPlateIdentify* _pModel_CarPlateIdentify = nullptr;
+	//2023.6.26新增
+	//裁剪中心点设置
+	//裁剪Y轴中心点
+	//int mYCenterValue = 90;
+	int mYCenterValue = 125;
+
 };
 

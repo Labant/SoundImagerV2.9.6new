@@ -40,7 +40,7 @@ void View_HMCutOut::initLayout()
 			"QSlider::sub-page:horizontal{background: rgb(31, 147, 251);border-top-left-radius:10px;border-bottom-left-radius:10px;}"
 			"QSlider::add-page:horizontal{background: rgb(255, 0, 0);border: 0px solid white;border-top-right-radius:10px;border-bottom-right-radius:10px;}");
 
-		this->_pGridLayout->addWidget(this->_pSlider[i], i, 2);
+		this->_pGridLayout->addWidget(this->_pSlider[i], i, 2,1,1);
 
 		this->_pLabel[i] = new QLabel(i > 0 ? QString::fromLocal8Bit("Y 轴裁剪数值:") : QString::fromLocal8Bit("X 轴裁剪数值:"), this);
 		this->_pGridLayout->addWidget(this->_pLabel[i], i, i == 1 ? (i -1) : i);
@@ -50,22 +50,33 @@ void View_HMCutOut::initLayout()
 		this->_pLineEdit[i]->setAlignment(Qt::AlignHCenter);
 		this->_pGridLayout->addWidget(this->_pLineEdit[i], i, 1);
 	}
+	this->_pLineEdit[0]->setText(QString::number(30));
+	this->_pLineEdit[1]->setText(QString::number(41));
+
+	//2023.6.26新增
+	//裁剪中心点设置
+	this->_pHmCutoutCenterTxt = new QLabel(QString::fromLocal8Bit("Y轴裁剪中心点:"));
+	this->_pHmHmCutoutCenter = new QLineEdit("90");
+	this->_pHmHmCutoutCenter->setAlignment(Qt::AlignHCenter);
+	this->_pHmHmCutoutCenter->setStyleSheet("QLineEdit {border-bottom-left-radius:10px;border-top-right-radius:10px;border-bottom-right-radius:10px;border-top-left-radius:10px;}");
+	this->_pGridLayout->addWidget(this->_pHmCutoutCenterTxt, 2, 0, 1, 1);
+	this->_pGridLayout->addWidget(this->_pHmHmCutoutCenter, 2, 1, 1, 1);
 
 	
 	//热力图系数
 	this->_pView_HmSizeFactor = new View_HmSizeFactor(this);
-	this->_pGridLayout->addWidget(this->_pView_HmSizeFactor, 2, 0, 1, 3);//
+	this->_pGridLayout->addWidget(this->_pView_HmSizeFactor, 3, 0, 1, 3);//
 
 	//2023.6.9新增
 	this->_pHmthresholdDisplay = new QLabel(QString::fromLocal8Bit("HM阈值:"));
 	this->_pHmthresholdValue = new QLineEdit(QString::fromLocal8Bit("0.0000007"));
-	this->_pGridLayout->addWidget(this->_pHmthresholdDisplay, 3, 0, 1, 1);
-	this->_pGridLayout->addWidget(this->_pHmthresholdValue, 3, 1, 1, 2);
+	this->_pGridLayout->addWidget(this->_pHmthresholdDisplay, 4, 0, 1, 1);
+	this->_pGridLayout->addWidget(this->_pHmthresholdValue, 4, 1, 1, 2);
 
 	this->_pHm_P1D_Display = new QLabel(QString::fromLocal8Bit("目前HM最大值值:"));
 	this->_pHmHm_P1D_DisplayValue = new QLineEdit();
-	this->_pGridLayout->addWidget(this->_pHm_P1D_Display, 4, 0, 1, 1);
-	this->_pGridLayout->addWidget(this->_pHmHm_P1D_DisplayValue, 4, 1, 1, 2);
+	this->_pGridLayout->addWidget(this->_pHm_P1D_Display, 5, 0, 1, 1);
+	this->_pGridLayout->addWidget(this->_pHmHm_P1D_DisplayValue, 5, 1, 1, 2);
 
 
 

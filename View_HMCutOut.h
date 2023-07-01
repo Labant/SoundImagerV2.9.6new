@@ -32,6 +32,11 @@ public:
 	QLabel* _pHm_P1D_Display = nullptr;
 	QLineEdit* _pHmHm_P1D_DisplayValue = nullptr;
 
+	//2023.6.26新增
+    //裁剪中心点设置
+	QLabel* _pHmCutoutCenterTxt = nullptr;
+	QLineEdit* _pHmHmCutoutCenter = nullptr;
+
 protected:
 	QLabel* _pLabel[2];
 private:

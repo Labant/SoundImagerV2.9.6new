@@ -30,12 +30,12 @@ void MainModel::initMember()
 	this->_pModel_HMCutOut = new Model_HMCutOut(this->_pMainViewControl->_mView_TabWidget_Setting->_pView_HMCutOut, this);
 	this->_Model_HmSizeFactor = new Model_HmSizeFactor(this->_pMainViewControl->_mView_TabWidget_Setting->_pView_HMCutOut->_pView_HmSizeFactor, this);
 	//opencv 视频流  使用IMX291摄像头s
-	this->m_model_videoDevice = new Model_VideoDevice(this->_pMainViewControl->_mView_TabWidget_Setting->mView_deviceChoose,this);
+	//this->m_model_videoDevice = new Model_VideoDevice(this->_pMainViewControl->_mView_TabWidget_Setting->mView_deviceChoose,this);
 	//海康相机
 	this->_pModel_HKDeviceGetRealTimeData = new Model_HKDeviceGetRealTimeData(this->_pMainViewControl->_mView_TabWidget_Setting->mView_deviceChoose, this);
 
 	//热力图数据处理和图像显示
-	this->_pModel_hotMapAndVideoDisplay = new Model_hotMapAndVideoDisplay(this->_pMainViewControl->_pView_hotMapAndVideoDisplay, this->m_model_videoDevice);
+	this->_pModel_hotMapAndVideoDisplay = new Model_hotMapAndVideoDisplay(this->_pMainViewControl->_pView_hotMapAndVideoDisplay, this->_pModel_HKDeviceGetRealTimeData);
 	
 	//超限识别车辆
 	this->_pModel_CarIdentifyInfoDisplay = new Model_CarIdentifyInfoDisplay(this->_pMainViewControl->_mView_TabWidget_Setting->_pView_CarIdentifyInfoDisplay);
@@ -63,6 +63,9 @@ void MainModel::initConnect()
 	connect(this->_pModel_hotMapAndVideoDisplay, &Model_hotMapAndVideoDisplay::on_signal_setSoundPw, this->_pModel_CarIdentifyInfoDisplay, &Model_CarIdentifyInfoDisplay::setSoundPw);
 	//车道
 	connect(this->_pModel_hotMapAndVideoDisplay, &Model_hotMapAndVideoDisplay::on_signal_setCarLane, this->_pModel_CarIdentifyInfoDisplay, &Model_CarIdentifyInfoDisplay::setCarLaneInfo);
+
+	//等待View_DeviceChoose ->TcpServer 初始化后在connect
+	connect(this->_pMainViewControl->_mView_TabWidget_Setting->mView_deviceChoose, &View_DeviceChoose::on_signal_initTCPState, this, &MainModel::initTcpStateNotice);
 }
 
 void MainModel::init()
@@ -91,4 +94,10 @@ void MainModel::replotHm()
 	{
 		this->_pMainViewControl->_pView_hotMapAndVideoDisplay->replot();
 	}
+}
+
+void MainModel::initTcpStateNotice()
+{
+	//Tcp VK采集卡连接状态
+	connect(this->_pModel_AudioCollector->_pTcpDiscoverServer, &TcpDiscoverServer::on_signal_TcpState, this->_pMainViewControl->_mView_TabWidget_Setting->mView_deviceChoose, &View_DeviceChoose::on_slot_tcpStateMonitor);
 }

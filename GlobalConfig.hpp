@@ -5,6 +5,7 @@
 
 #ifndef GLOBALCONFIG_H
 #define GLOBALCONFIG_H
+#include <QHostAddress>
 
 //相机初始flag
 //bool GLOBALCONFIG_CAMERAINITFLAG = false;
@@ -51,6 +52,26 @@ struct MyPoint
 	int count;
 };//Point 结构体包含了鼠标点击widget的具体位置，和绘制圆的半径以及被点击的次数，这个次数是整体权重计算的比例
 #endif //! MYPOINT_STRUCT
+
+
+//TCP link 参数
+const QHostAddress PRESETMONITORIP("192.168.1.188");
+constexpr quint16 PRESETMONITORPORT = 8234;
+
+//Tcp  解析 参数
+constexpr double GAIN = 0.688f;
+constexpr double HEX800000 = 8388608.0f;
+constexpr double HEX8000 = 32768.0f;
+constexpr double NEED_16BITS = HEX8000 * GAIN;
+constexpr double NEED_24BITS = HEX800000 * GAIN;
+constexpr int PACKLENGTH = 0x04 * 256 + 4;
+enum SAMPLEBITS
+{
+	BITS_16 = 0,
+	BITS_24 = 1
+
+};
+
 
 
 #endif//! GLOBALCONFIG_H

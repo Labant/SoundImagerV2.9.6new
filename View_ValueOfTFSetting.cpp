@@ -50,7 +50,7 @@ void View_ValueOfTFSetting::initLayout()
 	this->setLayout(this->_pHBoxLayout);
 
 	//Auto ÃèÊö
-	_pPtnAuto = new QPushButton(QString::fromLocal8Bit("Auto:"));
+	_pPtnAuto = new QPushButton(QString::fromLocal8Bit("Manual:"));
 	this->_pHBoxLayout->addWidget(_pPtnAuto);
 	//_pLabelAuto->setAlignment(Qt::AlignLeft);
 

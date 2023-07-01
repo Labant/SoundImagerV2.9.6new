@@ -1,10 +1,11 @@
 #include "Model_HKDeviceGetRealTimeData.h"
 #include "View_DeviceChoose.h"
 #include "CVMat2QImage.h"
-#include "Model_CarPlateIdentify.h"
+
 //#ifndef MYNAMESPACE_H
 //#include "MyNameSpace.h"
 //#endif
+using namespace std;
 
 #ifndef HHKK
 #define HHKK 1
@@ -12,6 +13,8 @@ QQueue<cv::Mat> mHKFrames;
 QMutex mFramesMutex;
 QImage mM_image; //BGR转为QImage
 Mat g_BGRImage;// YUV转为BGR
+QString mLicensePlate;//车牌
+QString mLicenseLane;//车道号
 #endif//@HHKK
 
 //Mat g_BGRImage;// YUV转为BGR
@@ -111,32 +114,36 @@ void CALLBACK g_RealDataCallBack_V30(LONG lPlayHandle, DWORD dwDataType, BYTE* p
 	//qDebug() << "2:" << QDateTime::currentMSecsSinceEpoch();
 }
 
-//报警回调函数
-void CALLBACK MSesGCallback(LONG lCommand, NET_DVR_ALARMER* pAlarmer, char* pAlarmInfo, DWORD dwBufLen, void* pUser)
+//报警回调函数		CALLBACK		0：报警类型,见Remarks；1：报警设备自身信息；2：报警信息，根据报警类型不同进行解析；3：报警信息缓存大小；4：用户数据；
+void  CALLBACK MSesGCallback(LONG lCommand, NET_DVR_ALARMER* pAlarmer, char* pAlarmInfo, DWORD dwBufLen, void* pUser)
 {
 
-	//ofstream oFile;//定义文件输出流
+	ofstream oFile;//定义文件输出流
+	char* filename;
+	FILE *fSnapPic, *fSnapPicPlate;
 	//oFile.open("车牌号.csv", ofstream::app);    //打开要输出的文件 	
-	//获取系统时间
-	SYSTEMTIME sys;
-	GetLocalTime(&sys);
-	cout << sys.wYear << "-" << sys.wMonth << "-" << sys.wDay << " " << sys.wHour << ":" << sys.wMinute << ":" << sys.wSecond << endl;
+	////获取系统时间
+	//SYSTEMTIME sys;
+	//GetLocalTime(&sys);
+	//cout << sys.wYear << "-" << sys.wMonth << "-" << sys.wDay << " " << sys.wHour << ":" << sys.wMinute << ":" << sys.wSecond << endl;
 
-	int i = 0;
-	char filename[100];
-	FILE* fSnapPic = NULL;
-	FILE* fSnapPicPlate = NULL;
-	//以下代码仅供参考，实际应用中不建议在该回调函数中直接处理数据保存文件，
-	//例如可以使用消息的方式(PostMessage)在消息响应函数里进行处理。
 	switch (lCommand) {
 		//交通抓拍结果(老报警消息)
 	case COMM_UPLOAD_PLATE_RESULT: {
 		NET_DVR_PLATE_RESULT struPlateResult = { 0 };
 		memcpy(&struPlateResult, pAlarmInfo, sizeof(struPlateResult));
 		qDebug() << QString::fromLocal8Bit("车牌：") << QString(QString::fromLocal8Bit(struPlateResult.struPlateInfo.sLicense));
+		qDebug() << QString::fromLocal8Bit("车辆类型：") << struPlateResult.byVehicleType;//20 油罐车
+		qDebug() << QString::fromLocal8Bit("车辆车道号：") << struPlateResult.byDriveChan;
 		//printf("车牌号: %s\n", struPlateResult.struPlateInfo.sLicense);//车牌号	
 		// oFile << struPlateResult.struPlateInfo.sLicense << endl;//保存车牌号到csv文件		
 		//oFile << struPlateResult.struPlateInfo.sLicense << "," << sys.wYear << "-" << sys.wMonth << "-" << sys.wDay << " " << sys.wHour << ":" << sys.wMinute << ":" << sys.wSecond << endl;//保存车牌号到csv文件	
+		
+		//处理牌照信息
+		Model_HKDeviceGetRealTimeData::doLicensePlate(QString(QString::fromLocal8Bit(struPlateResult.struPlateInfo.sLicense)));
+		//车道号
+		mLicenseLane = QString::number(struPlateResult.byDriveChan);
+
 		//场景图
 		if (struPlateResult.dwPicLen != 0 && struPlateResult.byResultType == 1)
 		{
@@ -158,19 +165,36 @@ void CALLBACK MSesGCallback(LONG lCommand, NET_DVR_ALARMER* pAlarmer, char* pAla
 		//其他信息处理......
 		break;
 	}
-								 //交通抓拍结果(新报警消息)
+	//交通抓拍结果(新报警消息)
 	case COMM_ITS_PLATE_RESULT: {
 		NET_ITS_PLATE_RESULT struITSPlateResult = { 0 };
 		memcpy(&struITSPlateResult, pAlarmInfo, sizeof(struITSPlateResult));
-		for (i = 0; i < struITSPlateResult.dwPicNum; i++)
+		for (int i = 0; i < struITSPlateResult.dwPicNum; i++)
 		{
 			qDebug() << QString::fromLocal8Bit("车牌：") << QString(QString::fromLocal8Bit(struITSPlateResult.struPlateInfo.sLicense));
+			qDebug() << QString::fromLocal8Bit("车辆类型：") << struITSPlateResult.byVehicleType;//20 油罐车
+			qDebug() << QString::fromLocal8Bit("车辆触发检测方法：") << struITSPlateResult.byDetectType; //2 视频触发
+			qDebug() << QString::fromLocal8Bit("车辆车道号：") << struITSPlateResult.byDriveChan;
+
+			//处理牌照信息
+			Model_HKDeviceGetRealTimeData::doLicensePlate(QString(QString::fromLocal8Bit(struITSPlateResult.struPlateInfo.sLicense)));
+			//车道号
+			mLicenseLane = QString::number(struITSPlateResult.byDriveChan);
+
+			//qDebug() << "6->!";//1！-2！：1ms
+			//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
+
 			//printf("车牌号: %s\n", struITSPlateResult.struPlateInfo.sLicense);//车牌号
-			carNum = struITSPlateResult.struPlateInfo.sLicense;
+			//carNum = struITSPlateResult.struPlateInfo.sLicense;//车牌
 			//oFile << carNum << "," << sys.wYear << "-" << sys.wMonth << "-" << sys.wDay << " " << sys.wHour << ":" << sys.wMinute << ":" << sys.wSecond << endl;//保存车牌号到csv文件	
+			
+			//小图位置：
+
+			//大图
 			if ((struITSPlateResult.struPicInfo[i].dwDataLen != 0) && (struITSPlateResult.struPicInfo[i].byType == 1) || (struITSPlateResult.struPicInfo[i].byType == 2))
 			{
-				//sprintf(filename, "./pic/%s_%d.jpg", struITSPlateResult.struPlateInfo.sLicense, i);
+				////sprintf(filename, "./pic/%s_%d.jpg", struITSPlateResult.struPlateInfo.sLicense, i);
+				//sprintf(filename, "./file/%s_%d.jpg", struITSPlateResult.struPlateInfo.sLicense, i);
 				//fSnapPic = fopen(filename, "wb");
 				//fwrite(struITSPlateResult.struPicInfo[i].pBuffer, struITSPlateResult.struPicInfo[i].dwDataLen, 1, fSnapPic);
 				//iNum++;
@@ -179,7 +203,7 @@ void CALLBACK MSesGCallback(LONG lCommand, NET_DVR_ALARMER* pAlarmer, char* pAla
 			//车牌小图片
 			if ((struITSPlateResult.struPicInfo[i].dwDataLen != 0) && (struITSPlateResult.struPicInfo[i].byType == 0))
 			{
-				//sprintf(filename, "./pic/1/%s_%d.jpg", struITSPlateResult.struPlateInfo.sLicense, i);
+				//sprintf(filename, "./file/%s_%d_.jpg", struITSPlateResult.struPlateInfo.sLicense, i);
 				//fSnapPicPlate = fopen(filename, "wb");
 				//fwrite(struITSPlateResult.struPicInfo[i].pBuffer, struITSPlateResult.struPicInfo[i].dwDataLen, 1, \
 				//	fSnapPicPlate);
@@ -202,6 +226,19 @@ void CALLBACK MSesGCallback(LONG lCommand, NET_DVR_ALARMER* pAlarmer, char* pAla
 	return;
 }
 
+void Model_HKDeviceGetRealTimeData::doLicensePlate(QString lp)
+{
+	if (lp.compare(QString::fromLocal8Bit("无车牌")) == 0)
+	{
+		mLicensePlate = QString::fromLocal8Bit("无车牌");
+	}
+	else {
+		mLicensePlate = lp;
+	}
+	
+	//qDebug() << "mLicensePlate:" << mLicensePlate;
+
+}
 
 Model_HKDeviceGetRealTimeData::Model_HKDeviceGetRealTimeData(View_DeviceChoose* handle, QObject* parent)
 {
@@ -251,8 +288,8 @@ void Model_HKDeviceGetRealTimeData::initHKDevice()
 	// 初始化
 	qDebug()<<NET_DVR_Init();
 	// 设置连接时间与重连时间
-	NET_DVR_SetConnectTime(2000, 1);
-	NET_DVR_SetReconnect(10000, true);
+	NET_DVR_SetConnectTime(10000, 1);
+	NET_DVR_SetReconnect(20000, true);
 
 	// 登录
 	NET_DVR_USER_LOGIN_INFO pLoginInfo = { 0 };
@@ -280,7 +317,6 @@ void Model_HKDeviceGetRealTimeData::initHKDevice()
 		qDebug() << "NET_DVR_SetLogToFile, error code: " << NET_DVR_SetLogToFile();
 		//QMessageBox::warning(this, "Login failed", QString("%1%2").arg("error code : ").arg(NET_DVR_GetLastError()));
 		NET_DVR_Cleanup();
-
 	}
 	else {
 		qDebug() << QString::fromLocal8Bit("Login succeed！");
@@ -338,8 +374,8 @@ void Model_HKDeviceGetRealTimeData::initHKDevice()
 
 	//设置布防回调函数
 	this->setMessageCallBack();
-	//设置报警
-	this->setupAlarm();
+	//设置布防参数
+	this->setArmParas();
 }
 
 void Model_HKDeviceGetRealTimeData::startCollectFrames()
@@ -356,11 +392,12 @@ void Model_HKDeviceGetRealTimeData::startCollectFrames()
 
 		//printf("NET_DVR_RealPlay_V40 error\n");
 		//QMessageBox::warning(this, "Video Stream open faild", "NET_DVR_RealPlay_V40 error");
-		qDebug() << __FUNCDNAME__ << "error:" << "NET_DVR_RealPlay_V40 error!";
+		qDebug() << __FUNCDNAME__ << "error:" << NET_DVR_GetLastError();
 		NET_DVR_Logout(lUserID);
 		NET_DVR_Cleanup();
 		return;
 	}
+	qDebug() << "start collector";
 }
 
 void Model_HKDeviceGetRealTimeData::stopCollectFrames()
@@ -373,11 +410,13 @@ void Model_HKDeviceGetRealTimeData::stopCollectFrames()
 
 	//关闭预览 实时推流
 	NET_DVR_StopRealPlay(lRealPlayHandle);
+
+	qDebug() << "stop collector!";
 }
 
 void Model_HKDeviceGetRealTimeData::setMessageCallBack()
 {
-	qDebug()<<__FUNCDNAME__ << NET_DVR_SetDVRMessageCallBack_V30(MSesGCallback, NULL);
+	NET_DVR_SetDVRMessageCallBack_V30(MSesGCallback, NULL);
 }
 
 void Model_HKDeviceGetRealTimeData::whitelist()
@@ -428,36 +467,71 @@ void Model_HKDeviceGetRealTimeData::blacklist()
 
 void Model_HKDeviceGetRealTimeData::setupAlarm()
 {
-	//启动布防
-	NET_DVR_SETUPALARM_PARAM struSetupParam = { 0 };
-	struSetupParam.dwSize = sizeof(NET_DVR_SETUPALARM_PARAM);
 
 
-	struSetupParam.byAlarmInfoType = 1;//上传报警信息类型：0-老报警信息(NET_DVR_PLATE_RESULT), 1-新报警信息(NET_ITS_PLATE_RESULT)
-	struSetupParam.byLevel = 1;//布防优先级：0- 一等级（高），1- 二等级（中），2- 三等级（低）
-	//bySupport 按位表示，值：0 - 上传，1 - 不上传;  bit0 - 表示二级布防是否上传图片;
 
 
+	if (IHandle != -1){
+		return;
+	}
+
+
+	this->setArmParas();
+	qDebug() << __FUNCDNAME__ << "IHandle:" << IHandle << "lUserID:" << lUserID
+		<<"byLevel:" << struSetupParam.byLevel;
 	IHandle = NET_DVR_SetupAlarmChan_V41(lUserID, &struSetupParam);//建立报警上传通道，获取报警等信息。
 	if (IHandle < 0)
 	{
-		std::cout << "NET_DVR_SetupAlarmChan_V41 Failed! Error number：" << NET_DVR_GetLastError() << std::endl;
-		NET_DVR_Logout(lUserID);
-		NET_DVR_Cleanup();
+		this->setupAlarm();
+		qDebug() << __FUNCDNAME__ << "NET_DVR_SetupAlarmChan_V41 Failed! Error number：" << NET_DVR_GetLastError();
+		//NET_DVR_Logout(lUserID);
+		//NET_DVR_Cleanup();
 		return;
 	}
-	std::cout << "\n" << endl;
 }
 
 void Model_HKDeviceGetRealTimeData::closeAlarm()
 {
+	
+	if (IHandle == -1){
+		return;
+	}
+	qDebug() << __FUNCDNAME__ << IHandle;
 	//撤销布防上传通道
 	if (!NET_DVR_CloseAlarmChan_V30(IHandle))//布防句柄IHandle
 	{
-		std::cout << "NET_DVR_CloseAlarmChan_V30 Failed! Error number：" << NET_DVR_GetLastError() << std::endl;
+		qDebug() <<__FUNCDNAME__<< "NET_DVR_CloseAlarmChan_V30 Failed! Error number：" << NET_DVR_GetLastError() ;
 		NET_DVR_Logout(lUserID);
 		NET_DVR_Cleanup();
 		return;
 	}
 	IHandle = -1;//布防句柄;
+}
+void Model_HKDeviceGetRealTimeData::setArmParas()
+{
+	//启动布防
+	//NET_DVR_SETUPALARM_PARAM struSetupParam = { 0 };
+	struSetupParam.dwSize = sizeof(NET_DVR_SETUPALARM_PARAM);
+
+	struSetupParam.byAlarmInfoType = 1;//上传报警信息类型：0-老报警信息(NET_DVR_PLATE_RESULT), 1-新报警信息(NET_ITS_PLATE_RESULT)
+	struSetupParam.byLevel = 1.0f;//布防优先级：0- 一等级（高），1- 二等级（中），2- 三等级（低）
+	//bySupport 按位表示，值：0 - 上传，1 - 不上传;  bit0 - 表示二级布防是否上传图片;
+
+	//抓拍照片质量参数
+	mNET_DVR_JPEGPARA.wPicSize = 64;
+	mNET_DVR_JPEGPARA.wPicQuality = 0;
+	//网络连拍次数参数设置
+	//this->mNET_DVR_SNAPCFG = new LPNET_DVR_SNAPCFG();
+	mtagNET_DVR_SNAPCFG.dwSize = sizeof(NET_DVR_SNAPCFG);//结构体大小
+	mtagNET_DVR_SNAPCFG.byRelatedDriveWay = 0;//触发IO关联车道号
+	mtagNET_DVR_SNAPCFG.bySnapTimes = 1;//线圈抓拍次数，非0-->抓拍次数
+	mtagNET_DVR_SNAPCFG.wSnapWaitTime = 40;//抓拍等待时间
+	mtagNET_DVR_SNAPCFG.wIntervalTime[1] = 80;//连拍间隔
+	mtagNET_DVR_SNAPCFG.dwSnapVehicleNum = 1;//抓拍车辆序号，从1递增
+	mtagNET_DVR_SNAPCFG.struJpegPara = mNET_DVR_JPEGPARA;//抓拍参数
+}
+void Model_HKDeviceGetRealTimeData::contuinCapture()
+{
+	//网络触发连续抓拍
+	//qDebug() << QString::fromLocal8Bit("网络触发连续抓拍:") << NET_DVR_ContinuousShoot(lUserID, &mtagNET_DVR_SNAPCFG);
 }

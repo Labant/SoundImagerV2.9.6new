@@ -99,7 +99,7 @@ void View_FrequencyTimeDomain::initCustomPlot()
 	//添加曲线
 	m_timeDomain_general->addGraph();
 	m_timeDomain_general->graph(0)->setName(QString::fromLocal8Bit("P-TimeDomain"));
-	m_timeDomain_general->graph(0)->setPen(QPen(QColor(Qt::red)));
+	m_timeDomain_general->graph(0)->setPen(QPen(QColor(230, 230, 230)));
 	//!!时域部分!!
 	//设置X轴坐标范围
 	m_timeDomain_general->xAxis->setRange(0, 4800*3);
@@ -109,7 +109,7 @@ void View_FrequencyTimeDomain::initCustomPlot()
 	//Frequency
 	m_freqencyDomain_general->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom); // 这也将允许通过拖拽/缩放尺度改变颜色范围
 	m_freqencyDomain_general->axisRect()->setupFullAxesBox(true);
-	m_freqencyDomain_general->xAxis->setLabel(QString::fromLocal8Bit("频率点(khz)"));
+	m_freqencyDomain_general->xAxis->setLabel(QString::fromLocal8Bit("频率点(kHz)"));
 	m_freqencyDomain_general->yAxis->setLabel(QString::fromLocal8Bit("振幅"));
 	//m_freqencyDomain_general->setBackground(QPixmap::fromImage(QImage(":/test_customPlot_hreatMap/image/gray.png")));
 	m_freqencyDomain_general->xAxis->setVisible(true);
@@ -122,19 +122,23 @@ void View_FrequencyTimeDomain::initCustomPlot()
 	//添加曲线
 	m_freqencyDomain_general->addGraph();
 	m_freqencyDomain_general->graph(0)->setName(QString::fromLocal8Bit("P-FFT"));
-	m_freqencyDomain_general->graph(0)->setPen(QPen(QColor(Qt::red)));
+	m_freqencyDomain_general->graph(0)->setPen(QPen(QColor(230, 230, 230)));//灰白
 	//!!频域部分!!
 	//设置X轴坐标范围
-	m_freqencyDomain_general->xAxis->setRange(0, 2400);//24kHz
+	//m_freqencyDomain_general->xAxis->setRange(0, 2400);//24kHz
+	//2023.6.28 更改
+	this->m_freqencyDomain_general->xAxis->setRange(0, 10, Qt::AlignLeft); //设置x轴范围
+	this->m_freqencyDomain_general->xAxis->ticker()->setTickCount(11);//11个主刻度
+
 	//设置Y轴坐标范围
 	m_freqencyDomain_general->yAxis->setRange(-0.02, 0.16);
 	//X轴坐标刻度精度
-	m_freqencyDomain_general->xAxis->setNumberPrecision(0.1);
+	//m_freqencyDomain_general->xAxis->setNumberPrecision(10);
 	//m_freqencyDomain_general->xAxis->setTickLabelRotation(45);
 	//设置精度样式
 	//m_freqencyDomain_general->xAxis->setNumberFormat("f");
-	m_freqencyDomain_general->xAxis->setSubTicks(0);
-	m_freqencyDomain_general->xAxis->ticker()->setTickCount(12);
+	m_freqencyDomain_general->xAxis->setSubTicks(true);
+	//m_freqencyDomain_general->xAxis->ticker()->setTickCount(24);
 	m_freqencyDomain_general->xAxis->ticker()->setTickStepStrategy(QCPAxisTicker::tssReadability);
 
 }

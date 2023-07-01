@@ -49,7 +49,8 @@ namespace MYSTRUCT
     enum CAPTURETYPE
     {
         SoundCard = 0,
-        NICaptureCard
+        NICaptureCard,
+        VKCaptureCard
     };
 
     //时序结构体。

@@ -27,6 +27,10 @@ signals:
 	void on_signal_xAxisRange(unsigned short);//更改X轴裁剪范围
 	void on_signal_yAxisRange(unsigned short);//更改Y轴裁剪范围
 
+	//2023.6.26新增
+	//裁剪中心点设置	
+	void on_signal_setYCutoutCenter(quint16);
+	void on_signal_setYCotoutRange(quint16);
 public:
 
 	QCPColorMap* colorMap = nullptr;

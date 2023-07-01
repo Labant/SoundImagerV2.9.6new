@@ -83,7 +83,7 @@ public:
 	//Save File
 	QFile* p_file = nullptr, * x_file = nullptr, * y_file = nullptr, * z_file = nullptr, * res_file = nullptr;
 	//采集卡类型
-	int mCaptrueType = CAPTURETYPE::SoundCard;
+	int mCaptrueType = CAPTURETYPE::VKCaptureCard;
 	////声卡对象
 	//soundCard* pSoundCard = nullptr;
 	////ni 采集卡对象
@@ -133,6 +133,9 @@ public:
 
 	//通用
 	View_FrequencyTimeDomain* m_freTime_general = nullptr;
+	//计算频域XAxis对应的x轴坐标
+	QVector<double> mFrequncyBin;
+
 	//时频域阈值
 	float mThresholdVT, mThresholdVF;
 	//QVBoxLayout* vbox;//主容器
@@ -236,6 +239,7 @@ private:
 	double mHmSizeFactor = 0.0f;
 
 
+
 signals:
 	void doFffOnce();
 	void m_signal_recordOver();
@@ -288,8 +292,10 @@ private:
 	void On_setYAxisCutOutValue(uInt16);
 
 	void On_setHmFactorValue(uInt16);
-protected:
 
+
+protected:
+	void calcFrequncyBin();
 //until
 protected:
 	double MAX_VALUE(double *value, double len);

@@ -49,11 +49,14 @@ public:
 	//≥¨œﬁ¥¶¿Ì
 	Model_CarIdentifyInfoDisplay* _pModel_CarIdentifyInfoDisplay = nullptr;
 
+	//Tcp test
+
+
 protected:
 	void replotVideo();
 	void replotHm();
 private:
-
+	void initTcpStateNotice();
 	
 };
 

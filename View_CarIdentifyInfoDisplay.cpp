@@ -42,6 +42,11 @@ void View_CarIdentifyInfoDisplay::setCarPlate(QString plate)
 
 void View_CarIdentifyInfoDisplay::setSoundPw(double pw)
 {
+	if (pw == 0)
+	{
+		this->_pLabelSoundPw->setText("No Message");
+		return;
+	}
 	this->_pLabelSoundPw->setText(QString::number(pw, 'f', 16));
 }
 

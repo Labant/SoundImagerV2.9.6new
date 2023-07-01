@@ -1,12 +1,9 @@
 #include "Model_hotMapAndVideoDisplay.h"
 #include "View_hotMapAndVideoDisplay.h"
-#include "Model_AudioCollector.h"
 #include "Model_VideoDevice.h"
 #include "CVMat2QImage.h"
 #include "CustomHm.hpp"
 #include "Model_HKDeviceGetRealTimeData.h"
-
-#include "Model_CarPlateIdentify.h"
 
 //#ifndef MYNAMESPACE_H
 //#include "MyNameSpace.h"
@@ -30,12 +27,16 @@ Model_hotMapAndVideoDisplay::Model_hotMapAndVideoDisplay(View_hotMapAndVideoDisp
 	//在进行初始化
 	this->_pView_hotMapAndVideoDisplay = handle;
 	//视频接口初始化
-	this->mModel_VideoDevice = qobject_cast<Model_VideoDevice*>(_handle); //opencv读取
+	//this->mModel_VideoDevice = qobject_cast<Model_VideoDevice*>(_handle); //opencv读取
 	this->_pModel_HKDeviceGetRealTimeData = qobject_cast<Model_HKDeviceGetRealTimeData*>(_handle); //海康
 	this->init();
 
 	////test
 	//test_ = imread("C:/Users/lvs/Pictures/46.jpg");
+
+	//test
+	//设置警报 == 开启识别车牌
+	this->_pModel_HKDeviceGetRealTimeData->setupAlarm();
 }
 
 Model_hotMapAndVideoDisplay::~Model_hotMapAndVideoDisplay()
@@ -44,6 +45,11 @@ Model_hotMapAndVideoDisplay::~Model_hotMapAndVideoDisplay()
 	{
 		this->_pView_hotMapAndVideoDisplay = nullptr;
 	}
+
+	//test
+	//关闭警报==关闭识别
+	this->_pModel_HKDeviceGetRealTimeData->closeAlarm();
+
 	delete this->_pP1_DData;
 	this->_pP1_DData = nullptr;
 	delete this->Fine_S;
@@ -74,8 +80,6 @@ void Model_hotMapAndVideoDisplay::initMember()
 	//qDebug() << "this->_pTimer->thread:" << this->_pTimer->thread();
 	this->_pCustomHm = new CustomHm(this);
 
-	//车辆识别
-	this->_pModel_CarPlateIdentify = new Model_CarPlateIdentify(this);
 
 }
 
@@ -99,13 +103,18 @@ void Model_hotMapAndVideoDisplay::initConnect()
 	//识别车牌
 	//connect(this, &Model_hotMapAndVideoDisplay::on_signal_sendImageMat, this->_pModel_CarPlateIdentify, &Model_CarPlateIdentify::on_signal_receiveMat, Qt::QueuedConnection);
 
-	//接收识别结果
-	//车牌
-	connect(this->_pModel_CarPlateIdentify, &Model_CarPlateIdentify::on_signal_sendIdentifyRes, this, &Model_hotMapAndVideoDisplay::on_setCarPlate,Qt::DirectConnection);
-	//声功率
-	connect(this->_pModel_CarPlateIdentify, &Model_CarPlateIdentify::on_signal_sendSoundPw, this, &Model_hotMapAndVideoDisplay::on_setSoundPw, Qt::DirectConnection);
-	//车道
-	connect(this->_pModel_CarPlateIdentify, &Model_CarPlateIdentify::on_signal_sendCarLane, this, &Model_hotMapAndVideoDisplay::on_setLane, Qt::DirectConnection);
+	//接收识别结果 EasyPR版本
+	////车牌
+	//connect(this->_pModel_CarPlateIdentify, &Model_CarPlateIdentify::on_signal_sendIdentifyRes, this, &Model_hotMapAndVideoDisplay::on_setCarPlate,Qt::DirectConnection);
+	////声功率
+	//connect(this->_pModel_CarPlateIdentify, &Model_CarPlateIdentify::on_signal_sendSoundPw, this, &Model_hotMapAndVideoDisplay::on_setSoundPw, Qt::DirectConnection);
+	////车道
+	//connect(this->_pModel_CarPlateIdentify, &Model_CarPlateIdentify::on_signal_sendCarLane, this, &Model_hotMapAndVideoDisplay::on_setLane, Qt::DirectConnection);
+
+	//2023.6.26新增
+	//裁剪中心点设置
+	//变更Y轴裁剪中心点
+	connect(this->_pView_hotMapAndVideoDisplay, &View_hotMapAndVideoDisplay::on_signal_setYCutoutCenter, this, &Model_hotMapAndVideoDisplay::on_setCutoutCenter);
 
 }
 
@@ -159,17 +168,17 @@ void Model_hotMapAndVideoDisplay::renderHM(const double* data)
 	//目标裁剪：0-30 后半部分
 	for (int xIndex = 0; xIndex < this->mXAxisCutOut; ++xIndex)//裁剪第几列
 	{
-		for (int yIndex = 90 - this->mYAxisCutOut; yIndex < 90 + this->mYAxisCutOut; ++yIndex) //裁剪第几行 裁剪（行，列）确定对于数值
+		for (int yIndex = this->mYCenterValue - this->mYAxisCutOut; yIndex < this->mYCenterValue + this->mYAxisCutOut; ++yIndex) //裁剪第几行 裁剪（行，列）确定对于数值
 		{
-			this->_pView_hotMapAndVideoDisplay->colorMap->data()->setCell(xIndex + this->mXAxisCutOut, yIndex - (90 - this->mYAxisCutOut), data[xIndex + yIndex * 360]);
+			this->_pView_hotMapAndVideoDisplay->colorMap->data()->setCell(xIndex + this->mXAxisCutOut, yIndex - (this->mYCenterValue - this->mYAxisCutOut), data[xIndex + yIndex * 360]);
 		}
 	}
 	//目标裁剪：330-360 前半部分
 	for (int xIndex = 360 - this->mXAxisCutOut; xIndex < 360; ++xIndex)//裁剪第几列
 	{
-		for (int yIndex = 90 - this->mYAxisCutOut; yIndex < 90 + this->mYAxisCutOut; ++yIndex) //裁剪第几行 裁剪（行，列）确定对于数值
+		for (int yIndex = this->mYCenterValue - this->mYAxisCutOut; yIndex < this->mYCenterValue + this->mYAxisCutOut; ++yIndex) //裁剪第几行 裁剪（行，列）确定对于数值
 		{
-			this->_pView_hotMapAndVideoDisplay->colorMap->data()->setCell(xIndex - (360 - this->mXAxisCutOut), yIndex - (90 - this->mYAxisCutOut), data[xIndex + yIndex * 360]);
+			this->_pView_hotMapAndVideoDisplay->colorMap->data()->setCell(xIndex - (360 - this->mXAxisCutOut), yIndex - (this->mYCenterValue - this->mYAxisCutOut), data[xIndex + yIndex * 360]);
 		}
 	}
 
@@ -321,9 +330,41 @@ void Model_hotMapAndVideoDisplay::renderFM()
 				//优化版本
 				this->mLvsDrawGradientRound.DrawGradientRound(mImage, mPoint, mFramesMutex);
 
-				//识别车辆 //子线程识别
+				//识别车辆 //子线程识别 opecv版改为海康sdk识别-->需要发布警报
 				//emit this->on_signal_sendImageMat(src, this->P_1D_MAX_lvs);
+
+				////设置警报 == 开启识别车牌
+				//this->_pModel_HKDeviceGetRealTimeData->setupAlarm();
+				this->_pModel_HKDeviceGetRealTimeData->contuinCapture();
+				
 			}
+			else{
+				////关闭警报==关闭识别
+				//this->_pModel_HKDeviceGetRealTimeData->closeAlarm();
+				
+			}
+
+			if (mLicensePlate.compare(this->mOldLicensePlate) != 0
+				&& mLicenseLane.compare(this->mOldLicenseLane) != 0)
+			{
+				if (mLicensePlate.compare(QString::fromLocal8Bit("无车牌")) != 0)
+				{
+					this->mOldLicensePlate = mLicensePlate;
+					this->on_setCarPlate(mLicensePlate);//车牌显示
+					this->on_setSoundPw(this->P_1D_MAX_lvs);//声功率显示
+					this->on_setLane(mLicenseLane);
+					//qDebug() << "5->!";//1！-2！：1ms
+					//qDebug() << QDateTime::currentMSecsSinceEpoch();//1685351203 822
+				}
+				else {
+					this->mOldLicensePlate = QString::fromLocal8Bit("无车牌");
+					this->mOldLicenseLane = QString::fromLocal8Bit("0");
+					this->on_setCarPlate("No LicensePlate");
+					this->on_setSoundPw(0);//声功率显示
+					this->on_setLane("No Message");
+				}
+			}
+
 
 
 			//qDebug() << "5->!";//1！-2！：1ms
@@ -443,3 +484,7 @@ void Model_hotMapAndVideoDisplay::on_setP1_DValue(double value)
 	}
 }
 
+void Model_hotMapAndVideoDisplay::on_setCutoutCenter(quint16 _center)
+{
+	this->mYCenterValue = _center;
+}

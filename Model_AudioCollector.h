@@ -6,6 +6,9 @@
 #include <QMutex>
 #include <QTimer>
 #include <QThread>
+#include "TcpDiscoverServer.h"
+#include <QTcpServer>
+#include <QTcpSocket>
 
 //class DataPack;
 class View_TabWidget_Setting;
@@ -33,6 +36,13 @@ private:
 	void initMember();
 	void read();
 
+	//初始化tcpServer
+	void initTcpServer();
+	//设置客户端参数
+	void initClientParameters();
+	void startTcpServer();
+	void stopTcpServer();
+
 signals:
 	void on_signal_stopTimer();
 	void on_signal_startTimer();
@@ -44,9 +54,18 @@ public:
 	//数据锁
 	QMutex mMutex;
 	//采集卡类型
-	int mCaptrueType = CAPTURETYPE::SoundCard;
+	int mCaptrueType = CAPTURETYPE::VKCaptureCard;
 	//自启动线程
 	QThread mThread;
+
+
+	//VK采集卡-数据服务器
+	TcpDiscoverServer* _pTcpDiscoverServer = nullptr;
+
+	//test
+	QTcpServer* _pTcpServer = nullptr;
+	QTcpSocket* _pTcpSocket = nullptr;
+
 protected:
 	//通道数据
 	double p[4800], x[4800], y[4800], z[4800];
@@ -56,5 +75,6 @@ protected:
 private:
 	//获取NI对象或声卡对象
 	View_TabWidget_Setting* mView_TabWidget_Setting = nullptr;
+
 };
 
